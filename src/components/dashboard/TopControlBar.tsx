@@ -48,7 +48,6 @@ export const TopControlBar: React.FC<TopControlBarProps> = ({
   const menuRef = useRef<HTMLDivElement>(null);
   const isMock = maintenanceApi.isUsingMock();
 
-  // Close role menu on outside click or Escape key
   useEffect(() => {
     if (!showRoleMenu) return;
 
@@ -70,115 +69,107 @@ export const TopControlBar: React.FC<TopControlBarProps> = ({
     };
   }, [showRoleMenu]);
 
-  const roleColors: Record<UserRole, string> = {
-    PELAPOR: 'text-sky-300 border-sky-700 bg-sky-950/40',
-    TEKNISI: 'text-amber-300 border-amber-700 bg-amber-950/40',
-    SUPERVISOR: 'text-emerald-300 border-emerald-700 bg-emerald-950/40',
-    ADMIN: 'text-purple-300 border-purple-700 bg-purple-950/40'
+  const roleDotColors: Record<UserRole, string> = {
+    PELAPOR: 'bg-[#0067ff]',
+    TEKNISI: 'bg-[#665eff]',
+    SUPERVISOR: 'bg-[#ffff00]',
+    ADMIN: 'bg-[#ff3a63]'
   };
 
   return (
-    <header className="sticky top-0 z-30 border-b border-slate-800 bg-slate-950/95 backdrop-blur-md px-3 sm:px-5 py-2.5">
-      <div className="max-w-[1600px] mx-auto flex flex-wrap items-center justify-between gap-2.5">
-        {/* Left: Branding & Live Sync */}
-        <div className="flex items-center gap-3">
+    <header className="sticky top-3 z-30 px-3 sm:px-5">
+      {/* Frosted Floating Pill Nav Bar (Index Style Reference) */}
+      <div className="max-w-[1200px] mx-auto rounded-[30px] border border-[#292a4d] bg-[#0c0a2b]/80 backdrop-blur-md px-3 sm:px-4 py-2 flex flex-wrap items-center justify-between gap-2.5">
+        {/* Left: Brand Identity & Live Telemetry Status */}
+        <div className="flex items-center gap-2.5">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded bg-slate-800 border border-slate-700 flex items-center justify-center font-mono font-bold text-emerald-400 text-sm tracking-wider">
-              M
+            <div className="w-8 h-8 rounded-[30px] alpine-horizon-line p-[1px] shrink-0">
+              <div className="w-full h-full rounded-[30px] bg-[#0c0a2b] flex items-center justify-center font-display font-semibold text-white text-sm">
+                M
+              </div>
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-sm font-bold font-mono tracking-tight uppercase text-white">
+                <span className="text-[15px] font-semibold font-display tracking-[0.012em] text-white">
                   MAINTENIS
-                </h1>
+                </span>
                 <span
-                  className={`text-[10px] font-mono px-1.5 py-0.5 rounded border ${
-                    isMock
-                      ? 'bg-amber-950/50 text-amber-300 border-amber-800/60'
-                      : 'bg-emerald-950/50 text-emerald-300 border-emerald-800/60'
-                  }`}
+                  className="inline-flex items-center gap-1.5 text-[11px] px-2.5 py-0.5 rounded-[30px] bg-[#13151f] border border-[#292a4d] text-[#b4b4bb] font-medium"
                   title={
                     isMock
                       ? 'Berjalan dalam Local Demo Storage (VITE_GAS_API_URL belum dikonfigurasi)'
                       : 'Terhubung langsung ke Google Sheets Apps Script'
                   }
                 >
-                  {isMock ? 'LOCAL SANDBOX' : 'LIVE SHEETS'}
+                  <span
+                    className={`w-1.5 h-1.5 rounded-full ${
+                      isMock ? 'bg-[#665eff]' : 'bg-[#ffff00]'
+                    }`}
+                  />
+                  {isMock ? 'Sandbox' : 'Live Sheets'}
                 </span>
               </div>
-              <p className="text-[11px] text-slate-400 font-mono hidden sm:block">
-                Industrial Engineering & Incident Telemetry
-              </p>
             </div>
           </div>
 
-          <div className="h-5 w-px bg-slate-800 hidden sm:block" />
+          <div className="h-4 w-px bg-[#202333] hidden sm:block" />
 
-          {/* Sync Status Badge */}
-          <div className="flex items-center gap-2">
-            <button
-              onClick={onRefresh}
-              disabled={isSyncing}
-              className="flex items-center gap-1.5 text-xs font-mono px-2.5 py-1.5 rounded bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white transition-colors disabled:opacity-50"
-              title="Manual refresh telemetry (auto-polls setiap 30 detik)"
-            >
-              <RefreshCw
-                className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin text-emerald-400' : 'text-emerald-400'}`}
-              />
-              <span className="hidden md:inline">
-                {isSyncing ? 'Syncing...' : 'Sync 30s'}
-              </span>
-            </button>
-            {lastSyncTime && (
-              <span className="text-[11px] font-mono text-slate-500 tabular-nums hidden xl:inline">
-                {lastSyncTime.toLocaleTimeString([], {
-                  hour: '2-digit',
-                  minute: '2-digit',
-                  second: '2-digit'
-                })}
-              </span>
-            )}
-          </div>
+          {/* Sync Pill */}
+          <button
+            onClick={onRefresh}
+            disabled={isSyncing}
+            className="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-[30px] bg-[#13151f] border border-[#202333] hover:border-[#292a4d] text-[#b4b4bb] hover:text-white transition-colors disabled:opacity-50"
+            title="Sinkronisasi manual (auto-poll 30s)"
+          >
+            <RefreshCw
+              className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin text-[#0067ff]' : 'text-[#9b9ba4]'}`}
+            />
+            <span className="hidden md:inline tabular-nums">
+              {isSyncing
+                ? 'Syncing'
+                : lastSyncTime
+                ? lastSyncTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                : '30s'}
+            </span>
+          </button>
         </div>
 
-        {/* Center: Shift Filter & Search (Hidden in TV Mode for cleaner display) */}
-        <div className="tv-hide flex items-center gap-2 order-3 lg:order-2 w-full lg:w-auto lg:flex-1 lg:max-w-lg">
-          {/* Shift Selector */}
+        {/* Center: Shift Filter & Search Pills */}
+        <div className="tv-hide flex items-center gap-2 order-3 lg:order-2 w-full lg:w-auto lg:flex-1 lg:max-w-md">
           <div className="relative shrink-0">
             <select
               aria-label="Filter Shift Operasional"
               value={selectedShift}
               onChange={(e) => onShiftChange(e.target.value)}
-              className={`appearance-none border rounded px-2.5 py-1.5 pr-7 text-xs font-mono focus:outline-none cursor-pointer transition-colors ${
+              className={`appearance-none rounded-[30px] border px-3 py-1.5 pr-7 text-xs font-medium focus:outline-none cursor-pointer transition-colors ${
                 selectedShift !== 'ALL'
-                  ? 'bg-cyan-950/50 border-cyan-700 text-cyan-200 font-semibold'
-                  : 'bg-slate-900 border-slate-800 text-slate-200 focus:border-slate-700'
+                  ? 'bg-[#2c2b52] border-[#665eff] text-white'
+                  : 'bg-[#13151f] border-[#292a4d] text-[#b4b4bb] hover:text-white'
               }`}
             >
               <option value="ALL">Semua Shift</option>
-              <option value="Shift 1 (Pagi)">Shift 1 (06-14)</option>
-              <option value="Shift 2 (Sore)">Shift 2 (14-22)</option>
-              <option value="Shift 3 (Malam)">Shift 3 (22-06)</option>
+              <option value="Shift 1 (Pagi)">Shift 1 (06â€“14)</option>
+              <option value="Shift 2 (Sore)">Shift 2 (14â€“22)</option>
+              <option value="Shift 3 (Malam)">Shift 3 (22â€“06)</option>
             </select>
-            <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <ChevronDown className="w-3.5 h-3.5 text-[#9b9ba4] absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           </div>
 
-          {/* Search Box */}
           <div className="relative flex-1">
-            <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
+            <Search className="w-3.5 h-3.5 text-[#9b9ba4] absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
-              placeholder="Cari tiket, ID aset, lokasi, pelapor..."
-              className="w-full bg-slate-900 border border-slate-800 rounded pl-8 pr-7 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-slate-700 transition-colors"
+              placeholder="Cari tiket, aset, lokasi..."
+              className="w-full bg-[#13151f] border border-[#292a4d] focus:border-[#665eff] rounded-[30px] pl-8 pr-7 py-1.5 text-xs text-white placeholder-[#9b9ba4] focus:outline-none transition-colors"
             />
             {searchQuery && (
               <button
                 type="button"
                 onClick={() => onSearchChange('')}
                 aria-label="Hapus pencarian"
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#9b9ba4] hover:text-white"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
@@ -186,104 +177,93 @@ export const TopControlBar: React.FC<TopControlBarProps> = ({
           </div>
         </div>
 
-        {/* Right: Actions, AI Copilot, User Profile */}
+        {/* Right: Secondary Ghost/Pill Controls + Exclusive Coral Primary CTA */}
         <div className="flex items-center gap-2 order-2 lg:order-3">
-          {/* TV / Kiosk Mode Toggle */}
           <button
             onClick={onToggleTvMode}
-            className={`flex items-center gap-1.5 px-2 py-1.5 rounded border text-xs font-mono transition-colors ${
+            className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-[30px] border text-xs font-medium transition-colors ${
               isTvMode
-                ? 'bg-emerald-950 border-emerald-600 text-emerald-300 font-semibold'
-                : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-white'
+                ? 'bg-[#2c2b52] border-[#665eff] text-white'
+                : 'bg-[#13151f] border-[#202333] text-[#9b9ba4] hover:text-white hover:border-[#292a4d]'
             }`}
-            title="Toggle TV / Kiosk Display Mode (High Visibility)"
+            title="TV / Kiosk Display Mode"
           >
-            <Tv className="w-4 h-4" />
-            {isTvMode && <span className="text-[11px]">TV ON</span>}
+            <Tv className="w-3.5 h-3.5" />
+            {isTvMode && <span className="text-[11px]">TV</span>}
           </button>
 
-          {/* AI Copilot Button */}
           <button
             onClick={onOpenCopilot}
-            className="tv-hide flex items-center gap-1.5 px-2.5 py-1.5 rounded bg-cyan-950/70 border border-cyan-800/80 text-cyan-300 hover:bg-cyan-900 hover:text-cyan-100 text-xs font-mono font-medium transition-colors"
+            className="tv-hide inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[30px] bg-[#13151f] border border-[#292a4d] hover:bg-[#2c2b52]/60 text-[#b4b4bb] hover:text-white text-xs font-medium transition-colors"
           >
-            <Bot className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Ask AI Copilot</span>
+            <Bot className="w-3.5 h-3.5 text-[#665eff]" />
+            <span className="hidden sm:inline">AI Copilot</span>
           </button>
 
-          {/* Manage Users (Supervisor & Admin) */}
           {can('MANAGE_USERS') && (
             <button
               onClick={onOpenUserManagement}
-              className="tv-hide p-1.5 rounded bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white transition-colors"
+              className="tv-hide p-1.5 rounded-[30px] bg-[#13151f] border border-[#202333] hover:border-[#292a4d] text-[#9b9ba4] hover:text-white transition-colors"
               title="Kelola Pengguna & Hak Akses"
             >
-              <Users className="w-4 h-4" />
+              <Users className="w-3.5 h-3.5" />
             </button>
           )}
 
-          {/* Fast Field Reporting Button (Primary CTA) */}
+          {/* Exclusive Coral-to-Red Primary CTA */}
           <button
             onClick={onOpenReportModal}
-            className="tv-hide flex items-center gap-1.5 px-3.5 py-1.5 rounded bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-mono font-bold transition-colors shadow-sm shadow-emerald-950/50"
+            className="tv-hide btn-coral-cta inline-flex items-center gap-1.5 px-4 py-1.5 text-xs sm:text-[13px]"
           >
-            <PlusCircle className="w-4 h-4" />
-            <span>Lapor Lapangan</span>
+            <PlusCircle className="w-3.5 h-3.5" />
+            <span>Lapor Insiden</span>
           </button>
 
-          {/* User Profile & Demo Role Switcher */}
+          {/* User Profile Pill */}
           {user && (
             <div className="relative tv-hide" ref={menuRef}>
               <button
                 onClick={() => setShowRoleMenu((prev) => !prev)}
                 aria-expanded={showRoleMenu}
-                className="flex items-center gap-2 p-1 pl-1.5 rounded border border-slate-800 bg-slate-900 hover:border-slate-700 transition-colors"
+                className="flex items-center gap-2 p-1 pr-2.5 rounded-[30px] border border-[#292a4d] bg-[#13151f] hover:bg-[#2c2b52]/50 transition-colors"
               >
                 {user.avatar_url ? (
                   <img
                     src={user.avatar_url}
                     alt={user.nama_lengkap}
-                    className="w-6 h-6 rounded-full object-cover border border-slate-700"
+                    className="w-6 h-6 rounded-full object-cover"
                   />
                 ) : (
-                  <div className="w-6 h-6 rounded-full bg-slate-700 flex items-center justify-center text-xs font-mono text-white">
+                  <div className="w-6 h-6 rounded-full bg-[#2c2b52] flex items-center justify-center text-xs font-medium text-white">
                     {user.nama_lengkap[0]}
                   </div>
                 )}
-                <div className="text-left hidden xl:block">
-                  <div className="text-xs font-medium text-slate-200 line-clamp-1 max-w-[110px]">
-                    {user.nama_lengkap}
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <span
-                      className={`text-[9px] font-mono px-1 py-0.2 rounded border uppercase font-bold ${
-                        roleColors[user.role]
-                      }`}
-                    >
-                      {user.role}
-                    </span>
-                    {isDemoMode && (
-                      <span className="text-[9px] font-mono text-amber-400">DEMO</span>
-                    )}
-                  </div>
-                </div>
-                <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+                <span className={`w-1.5 h-1.5 rounded-full ${roleDotColors[user.role]}`} />
+                <span className="text-xs font-medium text-white hidden xl:inline max-w-[96px] truncate">
+                  {user.role}
+                </span>
+                <ChevronDown className="w-3 h-3 text-[#9b9ba4]" />
               </button>
 
-              {/* Quick Role Switcher Dropdown */}
               {showRoleMenu && (
-                <div className="absolute right-0 mt-2 w-64 rounded-lg bg-slate-900 border border-slate-800 shadow-2xl py-2 z-50 text-xs animate-in fade-in">
-                  <div className="px-3 py-1.5 border-b border-slate-800">
-                    <p className="font-semibold text-white">{user.nama_lengkap}</p>
-                    <p className="text-[11px] text-slate-400 font-mono">{user.email}</p>
-                    <p className="text-[11px] text-slate-500 font-mono mt-0.5">
+                <div className="absolute right-0 mt-2 w-64 rounded-[12px] bg-[#0c0a2b] border border-[#292a4d] py-2 z-50 text-xs">
+                  <div className="px-3.5 py-2 border-b border-[#202333]">
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="font-semibold text-white truncate">{user.nama_lengkap}</p>
+                      {isDemoMode && (
+                        <span className="text-[10px] px-2 py-0.5 rounded-[30px] bg-[#13151f] border border-[#292a4d] text-[#b4b4bb]">
+                          Demo
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-[11px] text-[#9b9ba4] mt-0.5">{user.email}</p>
+                    <p className="text-[11px] text-[#9b9ba4] mt-0.5">
                       {user.unit_kerja} â€¢ {user.shift || 'Normal Day'}
                     </p>
                   </div>
 
-                  {/* Switch Demo Role Section */}
-                  <div className="px-3 py-2 border-b border-slate-800">
-                    <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider block mb-1.5">
+                  <div className="px-3.5 py-2.5 border-b border-[#202333]">
+                    <span className="text-[11px] text-[#9b9ba4] block mb-2">
                       Switch Role (Testing RBAC):
                     </span>
                     <div className="grid grid-cols-2 gap-1.5">
@@ -295,10 +275,10 @@ export const TopControlBar: React.FC<TopControlBarProps> = ({
                               switchDemoRole(r);
                               setShowRoleMenu(false);
                             }}
-                            className={`px-2 py-1 rounded text-left font-mono text-[10px] border transition-colors ${
+                            className={`px-2.5 py-1 rounded-[30px] text-center text-[11px] border transition-colors ${
                               user.role === r
-                                ? 'bg-slate-800 border-slate-600 text-white font-bold'
-                                : 'bg-slate-950/60 border-slate-800 text-slate-400 hover:text-white hover:bg-slate-800'
+                                ? 'bg-[#2c2b52] border-[#665eff] text-white font-medium'
+                                : 'bg-[#13151f] border-[#202333] text-[#9b9ba4] hover:text-white'
                             }`}
                           >
                             {r}
@@ -308,17 +288,16 @@ export const TopControlBar: React.FC<TopControlBarProps> = ({
                     </div>
                   </div>
 
-                  {/* Logout Button */}
-                  <div className="px-1 pt-1">
+                  <div className="px-2 pt-1.5">
                     <button
                       onClick={() => {
                         setShowRoleMenu(false);
                         logout();
                       }}
-                      className="w-full flex items-center gap-2 px-3 py-1.5 text-rose-400 hover:bg-rose-950/30 rounded text-left transition-colors font-mono"
+                      className="w-full flex items-center gap-2 px-3 py-1.5 text-[#ff3a63] hover:bg-[#13151f] rounded-[30px] text-left transition-colors"
                     >
                       <LogOut className="w-3.5 h-3.5" />
-                      <span>Keluar (Logout)</span>
+                      <span>Keluar</span>
                     </button>
                   </div>
                 </div>
