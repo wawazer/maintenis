@@ -4,7 +4,8 @@ import {
   ExternalLink,
   FileCheck,
   Camera,
-  UserCheck
+  UserCheck,
+  ChevronDown
 } from 'lucide-react';
 import {
   IncidentReport,
@@ -42,7 +43,6 @@ export const TicketHistoryDrawer: React.FC<TicketHistoryDrawerProps> = ({
   const { user, can } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Form State for Ticket Mutations
   const [selectedStatus, setSelectedStatus] = useState<TicketStatus>(
     ticket?.status_terkini || 'IN_PROGRESS'
   );
@@ -55,12 +55,10 @@ export const TicketHistoryDrawer: React.FC<TicketHistoryDrawerProps> = ({
   const [logNotes, setLogNotes] = useState<string>('');
   const [validationError, setValidationError] = useState<string | null>(null);
 
-  // Resolution Photo Upload
   const [previewResolvedPhoto, setPreviewResolvedPhoto] = useState<string | null>(null);
   const [resolvedBase64, setResolvedBase64] = useState<string | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
 
-  // Update local state when ticket changes
   React.useEffect(() => {
     if (ticket) {
       setSelectedStatus(ticket.status_terkini);
@@ -75,7 +73,6 @@ export const TicketHistoryDrawer: React.FC<TicketHistoryDrawerProps> = ({
 
   if (!isOpen || !ticket) return null;
 
-  // Filter logs for this specific ticket
   const ticketLogs = logs.filter((l) => l.ticket_id === ticket.ticket_id);
 
   const handlePhotoSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -91,7 +88,6 @@ export const TicketHistoryDrawer: React.FC<TicketHistoryDrawerProps> = ({
     }
   };
 
-  // 1-Click Quick Claim for Technician / Supervisor
   const handleQuickClaim = async () => {
     if (!user || isUpdating) return;
     setIsUpdating(true);
@@ -160,26 +156,26 @@ export const TicketHistoryDrawer: React.FC<TicketHistoryDrawerProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
-      {/* Backdrop Overlay */}
+      {/* Abyss Backdrop Overlay */}
       <div
         onClick={onClose}
-        className="fixed inset-0 bg-black/70 backdrop-blur-xs transition-opacity"
+        className="fixed inset-0 bg-[#02030b]/85 backdrop-blur-sm transition-opacity"
         aria-hidden="true"
       />
 
-      {/* Slide-over Panel */}
-      <div className="relative z-10 w-full sm:w-[600px] lg:w-[680px] bg-slate-900 border-l border-slate-800 shadow-2xl flex flex-col animate-in slide-in-from-right duration-200 h-full">
+      {/* Slide-over Slate Indigo Panel */}
+      <div className="relative z-10 w-full sm:w-[600px] lg:w-[680px] bg-[#0c0a2b] border-l border-[#292a4d] flex flex-col animate-in slide-in-from-right duration-200 h-full">
         {/* Drawer Header */}
-        <div className="p-4 border-b border-slate-800 flex items-center justify-between gap-3 bg-slate-950/90">
+        <div className="p-4 sm:px-6 border-b border-[#202333] flex items-center justify-between gap-3 bg-[#0c0a2b]">
           <div>
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-base font-bold font-mono text-white tabular-nums tracking-wider">
+              <span className="text-[18px] font-display font-semibold tracking-[0.013em] text-white tabular-nums">
                 {ticket.ticket_id}
               </span>
               <StatusBadge status={ticket.kategori_laporan} size="sm" showDot={false} />
               <StatusBadge status={ticket.status_terkini} size="sm" />
             </div>
-            <p className="text-xs text-slate-400 font-mono mt-0.5">
+            <p className="text-xs text-[#9b9ba4] mt-0.5 tabular-nums">
               Dibuat pada {new Date(ticket.created_at).toLocaleString('id-ID')}
             </p>
           </div>
@@ -190,44 +186,45 @@ export const TicketHistoryDrawer: React.FC<TicketHistoryDrawerProps> = ({
                 type="button"
                 onClick={handleQuickClaim}
                 disabled={isUpdating}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-amber-600 hover:bg-amber-500 text-white text-xs font-mono font-bold transition-colors disabled:opacity-50"
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-[30px] bg-[#13151f] border border-[#0067ff]/80 hover:bg-[#2c2b52]/60 text-white text-xs font-medium transition-colors disabled:opacity-50"
                 title="Ambil tiket ini dan mulai kerjakan sekarang"
               >
-                <UserCheck className="w-3.5 h-3.5" />
+                <UserCheck className="w-3.5 h-3.5 text-[#0067ff]" />
                 <span>Ambil Tiket</span>
               </button>
             )}
             <button
               onClick={onClose}
               aria-label="Tutup drawer"
-              className="p-1.5 rounded text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+              className="p-1.5 rounded-[30px] bg-[#13151f] border border-[#202333] text-[#9b9ba4] hover:text-white hover:border-[#292a4d] transition-colors"
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4" />
             </button>
           </div>
         </div>
 
         {/* Drawer Body Scroll */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5">
           {/* 1. Before & After Photo Comparison */}
-          <div className="rounded-lg border border-slate-800 bg-slate-950/60 p-3.5 space-y-2">
+          <div className="rounded-[12px] border border-[#202333] bg-[#13151f] p-4 space-y-2.5">
             <div className="flex items-center justify-between">
-              <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-300">
+              <h4 className="text-[14px] font-display font-semibold tracking-[0.013em] text-white">
                 Dokumentasi Foto: Before & After
               </h4>
-              <span className="text-[10px] font-mono text-slate-500">
+              <span className="text-[11px] text-[#9b9ba4]">
                 Verifikasi Visual Lapangan
               </span>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
               {/* Foto Awal (Before) */}
-              <div className="space-y-1">
-                <span className="text-[11px] font-mono text-rose-400 uppercase font-semibold block">
-                  â€¢ Kondisi Temuan (Before)
+              <div className="space-y-1.5">
+                <span className="inline-flex items-center gap-1.5 text-[11px] text-[#b4b4bb] font-medium">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#ff3a63]" />
+                  Kondisi Temuan (Before)
                 </span>
                 {ticket.foto_awal_url ? (
-                  <div className="relative group rounded border border-slate-800 overflow-hidden bg-slate-900 aspect-video flex items-center justify-center">
+                  <div className="relative group rounded-[12px] border border-[#292a4d] overflow-hidden bg-[#0c0a2b] aspect-video flex items-center justify-center">
                     <img
                       src={ticket.foto_awal_url}
                       alt="Foto Awal"
@@ -237,26 +234,27 @@ export const TicketHistoryDrawer: React.FC<TicketHistoryDrawerProps> = ({
                       href={ticket.foto_awal_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="absolute bottom-2 right-2 p-1 rounded bg-black/60 text-white hover:bg-black/80 transition-colors"
+                      className="absolute bottom-2 right-2 p-1.5 rounded-[30px] bg-[#02030b]/80 border border-[#292a4d] text-white hover:bg-[#2c2b52] transition-colors"
                       title="Buka Ukuran Penuh"
                     >
                       <ExternalLink className="w-3.5 h-3.5" />
                     </a>
                   </div>
                 ) : (
-                  <div className="rounded border border-dashed border-slate-800 aspect-video flex items-center justify-center text-xs font-mono text-slate-600 bg-slate-900/40">
+                  <div className="rounded-[12px] border border-dashed border-[#292a4d] aspect-video flex items-center justify-center text-xs text-[#9b9ba4] bg-[#0c0a2b]/60">
                     Tidak ada foto temuan
                   </div>
                 )}
               </div>
 
               {/* Foto Akhir (After) */}
-              <div className="space-y-1">
-                <span className="text-[11px] font-mono text-emerald-400 uppercase font-semibold block">
-                  â€¢ Hasil Perbaikan (After)
+              <div className="space-y-1.5">
+                <span className="inline-flex items-center gap-1.5 text-[11px] text-[#b4b4bb] font-medium">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#ffff00]" />
+                  Hasil Perbaikan (After)
                 </span>
                 {ticket.foto_akhir_url || previewResolvedPhoto ? (
-                  <div className="relative group rounded border border-slate-800 overflow-hidden bg-slate-900 aspect-video flex items-center justify-center">
+                  <div className="relative group rounded-[12px] border border-[#292a4d] overflow-hidden bg-[#0c0a2b] aspect-video flex items-center justify-center">
                     <img
                       src={previewResolvedPhoto || ticket.foto_akhir_url}
                       alt="Foto Akhir"
@@ -266,14 +264,14 @@ export const TicketHistoryDrawer: React.FC<TicketHistoryDrawerProps> = ({
                       href={previewResolvedPhoto || ticket.foto_akhir_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="absolute bottom-2 right-2 p-1 rounded bg-black/60 text-white hover:bg-black/80 transition-colors"
+                      className="absolute bottom-2 right-2 p-1.5 rounded-[30px] bg-[#02030b]/80 border border-[#292a4d] text-white hover:bg-[#2c2b52] transition-colors"
                       title="Buka Ukuran Penuh"
                     >
                       <ExternalLink className="w-3.5 h-3.5" />
                     </a>
                   </div>
                 ) : (
-                  <div className="rounded border border-dashed border-slate-800 aspect-video flex items-center justify-center text-xs font-mono text-slate-600 bg-slate-900/40">
+                  <div className="rounded-[12px] border border-dashed border-[#292a4d] aspect-video flex items-center justify-center text-xs text-[#9b9ba4] bg-[#0c0a2b]/60">
                     Menunggu penanganan selesai
                   </div>
                 )}
@@ -282,10 +280,10 @@ export const TicketHistoryDrawer: React.FC<TicketHistoryDrawerProps> = ({
           </div>
 
           {/* 2. Key Metadata & Description */}
-          <div className="grid grid-cols-2 gap-3 text-xs bg-slate-950/40 p-3 rounded-lg border border-slate-800/80">
+          <div className="grid grid-cols-2 gap-3.5 text-xs bg-[#13151f] p-4 rounded-[12px] border border-[#202333]">
             <div>
-              <span className="text-[10px] font-mono uppercase text-slate-500 block">
-                Aset Terkait:
+              <span className="text-[11px] uppercase tracking-[0.015em] text-[#9b9ba4] block">
+                Aset Terkait
               </span>
               <button
                 onClick={() => {
@@ -294,68 +292,68 @@ export const TicketHistoryDrawer: React.FC<TicketHistoryDrawerProps> = ({
                     onClose();
                   }
                 }}
-                className="text-xs font-mono font-bold text-cyan-400 hover:underline flex items-center gap-1 mt-0.5"
+                className="text-[13px] font-medium text-white hover:text-[#0067ff] flex items-center gap-1.5 mt-1 tabular-nums transition-colors"
               >
                 <span>{ticket.asset_id}</span>
                 {ticket.asset_id !== 'NON-ASET' && (
-                  <span className="text-[9px] px-1 py-0.2 rounded bg-cyan-950 border border-cyan-800 text-cyan-300">
-                    Riwayat Mesin
+                  <span className="text-[11px] px-2 py-0.5 rounded-[30px] bg-[#0c0a2b] border border-[#292a4d] text-[#b4b4bb]">
+                    Filter Aset
                   </span>
                 )}
               </button>
             </div>
 
             <div>
-              <span className="text-[10px] font-mono uppercase text-slate-500 block">
-                Tingkat Urgensi:
+              <span className="text-[11px] uppercase tracking-[0.015em] text-[#9b9ba4] block">
+                Tingkat Urgensi
               </span>
-              <div className="mt-0.5">
+              <div className="mt-1">
                 <StatusBadge status={ticket.urgensi} size="sm" />
               </div>
             </div>
 
             <div className="col-span-2">
-              <span className="text-[10px] font-mono uppercase text-slate-500 block">
-                Lokasi Titik:
+              <span className="text-[11px] uppercase tracking-[0.015em] text-[#9b9ba4] block">
+                Lokasi Titik
               </span>
-              <p className="text-slate-200 mt-0.5 font-sans">{ticket.lokasi_detail}</p>
+              <p className="text-[13px] text-white mt-0.5">{ticket.lokasi_detail}</p>
             </div>
 
             <div>
-              <span className="text-[10px] font-mono uppercase text-slate-500 block">
-                Pelapor:
+              <span className="text-[11px] uppercase tracking-[0.015em] text-[#9b9ba4] block">
+                Pelapor
               </span>
-              <p className="text-slate-200 mt-0.5 font-medium">
+              <p className="text-[13px] text-white mt-0.5 font-medium">
                 {ticket.pelapor_nama}{' '}
-                <span className="text-[11px] font-mono text-slate-500">
+                <span className="text-xs text-[#9b9ba4] font-normal">
                   ({ticket.pelapor_unit})
                 </span>
               </p>
             </div>
 
             <div>
-              <span className="text-[10px] font-mono uppercase text-slate-500 block">
-                PIC Teknisi:
+              <span className="text-[11px] uppercase tracking-[0.015em] text-[#9b9ba4] block">
+                PIC Teknisi
               </span>
-              <p className="text-slate-200 mt-0.5 font-medium">
+              <p className="text-[13px] text-white mt-0.5 font-medium">
                 {ticket.pic_teknisi_nama || (
-                  <span className="text-slate-500 font-mono italic">Belum Ditugaskan</span>
+                  <span className="text-[#9b9ba4] font-normal">Belum Ditugaskan</span>
                 )}
               </p>
             </div>
           </div>
 
           {/* Description Box */}
-          <div className="rounded-lg border border-slate-800 bg-slate-950/80 p-3.5">
-            <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-400 block mb-1">
-              Deskripsi Gejala / Temuan Lapangan:
+          <div className="rounded-[12px] border border-[#202333] bg-[#13151f] p-4">
+            <span className="text-[11px] uppercase tracking-[0.015em] text-[#9b9ba4] block mb-1.5 font-medium">
+              Deskripsi Gejala / Temuan Lapangan
             </span>
-            <p className="text-xs text-slate-200 leading-relaxed font-sans">
+            <p className="text-[13px] text-white leading-[1.6]">
               {ticket.deskripsi}
             </p>
           </div>
 
-          {/* 3. AI Troubleshooting Assistant Card (for TEKNISI / SUPERVISOR / ADMIN) */}
+          {/* 3. AI Troubleshooting Assistant Card */}
           <RoleGuard permission="ACCESS_AI_ANALYST">
             <AiTroubleshootCard ticket={ticket} />
           </RoleGuard>
@@ -364,24 +362,24 @@ export const TicketHistoryDrawer: React.FC<TicketHistoryDrawerProps> = ({
           <RoleGuard
             permission="UPDATE_TICKET_PROGRESS"
             fallback={
-              <div className="p-3 rounded-lg border border-slate-800 bg-slate-950/30 text-xs text-slate-500 font-mono text-center">
+              <div className="p-3.5 rounded-[12px] border border-[#202333] bg-[#13151f] text-xs text-[#9b9ba4] text-center">
                 Role Pelapor: Anda dapat memantau proses perbaikan melalui timeline di bawah.
               </div>
             }
           >
-            <div className="rounded-lg border border-emerald-900/40 bg-slate-950/90 p-4 space-y-4">
-              <div className="flex items-center gap-2 pb-2 border-b border-slate-800">
-                <FileCheck className="w-4 h-4 text-emerald-400" />
-                <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-emerald-300">
+            <div className="rounded-[12px] border border-[#292a4d] bg-[#13151f] p-4 space-y-4">
+              <div className="flex items-center gap-2 pb-2.5 border-b border-[#202333]">
+                <FileCheck className="w-4 h-4 text-[#0067ff]" />
+                <h4 className="text-[14px] font-display font-semibold tracking-[0.013em] text-white">
                   Panel Tindakan Teknisi & Supervisor
                 </h4>
               </div>
 
               <form onSubmit={handleActionSubmit} className="space-y-3.5">
-                {/* Transition Status */}
+                {/* Transition Status Pills */}
                 <div>
-                  <label className="text-[11px] font-mono uppercase tracking-wider text-slate-400 block mb-1">
-                    Ubah Status Tiket:
+                  <label className="text-[11px] uppercase tracking-[0.015em] text-[#9b9ba4] block mb-1.5 font-medium">
+                    Ubah Status Tiket
                   </label>
                   <div className="grid grid-cols-3 gap-1.5">
                     {availableStatuses.map((st) => (
@@ -389,44 +387,47 @@ export const TicketHistoryDrawer: React.FC<TicketHistoryDrawerProps> = ({
                         key={st}
                         type="button"
                         onClick={() => setSelectedStatus(st)}
-                        className={`py-1.5 px-2 rounded text-[11px] font-mono font-semibold border transition-colors ${
+                        className={`py-1.5 px-2.5 rounded-[30px] text-xs font-medium border transition-colors ${
                           selectedStatus === st
-                            ? 'bg-slate-800 border-emerald-500 text-emerald-300'
-                            : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-white'
+                            ? 'bg-[#2c2b52] border-[#665eff] text-white'
+                            : 'bg-[#0c0a2b] border-[#202333] text-[#b4b4bb] hover:border-[#292a4d] hover:text-white'
                         }`}
                       >
-                        {st}
+                        {st.replace('_', ' ')}
                       </button>
                     ))}
                   </div>
                 </div>
 
-                {/* Assign PIC (Supervisor / Admin only) */}
+                {/* Assign PIC */}
                 <RoleGuard permission="ASSIGN_TECHNICIAN">
                   <div>
-                    <label className="text-[11px] font-mono uppercase tracking-wider text-slate-400 block mb-1">
-                      Tugaskan PIC Teknisi:
+                    <label className="text-[11px] uppercase tracking-[0.015em] text-[#9b9ba4] block mb-1.5 font-medium">
+                      Tugaskan PIC Teknisi
                     </label>
-                    <select
-                      value={selectedPicEmail}
-                      onChange={(e) => setSelectedPicEmail(e.target.value)}
-                      className="w-full bg-slate-900 border border-slate-800 rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-slate-700"
-                    >
-                      <option value="">-- Pilih Teknisi --</option>
-                      {technicians.map((tech) => (
-                        <option key={tech.email} value={tech.email}>
-                          {tech.nama_lengkap} ({tech.spesialisasi || 'Teknisi'} -{' '}
-                          {tech.shift || 'Shift 1'})
-                        </option>
-                      ))}
-                    </select>
+                    <div className="relative">
+                      <select
+                        value={selectedPicEmail}
+                        onChange={(e) => setSelectedPicEmail(e.target.value)}
+                        className="appearance-none w-full bg-[#0c0a2b] border border-[#292a4d] focus:border-[#665eff] rounded-[30px] px-3.5 pr-8 py-2 text-[13px] text-white focus:outline-none cursor-pointer transition-colors"
+                      >
+                        <option value="">-- Pilih Teknisi --</option>
+                        {technicians.map((tech) => (
+                          <option key={tech.email} value={tech.email}>
+                            {tech.nama_lengkap} ({tech.spesialisasi || 'Teknisi'} â€¢{' '}
+                            {tech.shift || 'Shift 1'})
+                          </option>
+                        ))}
+                      </select>
+                      <ChevronDown className="w-3.5 h-3.5 text-[#9b9ba4] absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    </div>
                   </div>
                 </RoleGuard>
 
                 {/* Upload Foto Hasil Perbaikan */}
                 <div>
-                  <label className="text-[11px] font-mono uppercase tracking-wider text-slate-400 block mb-1">
-                    Unggah Foto Hasil Perbaikan / Penertiban (After):
+                  <label className="text-[11px] uppercase tracking-[0.015em] text-[#9b9ba4] block mb-1.5 font-medium">
+                    Unggah Foto Hasil Perbaikan / Penertiban (After)
                   </label>
                   <input
                     type="file"
@@ -438,9 +439,9 @@ export const TicketHistoryDrawer: React.FC<TicketHistoryDrawerProps> = ({
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className="flex items-center gap-2 px-3 py-2 rounded bg-slate-900 border border-slate-800 hover:border-slate-700 text-xs font-mono text-slate-300 hover:text-white transition-colors w-full justify-center"
+                    className="flex items-center gap-2 px-4 py-2 rounded-[30px] bg-[#0c0a2b] border border-[#292a4d] hover:border-[#665eff] text-xs font-medium text-[#b4b4bb] hover:text-white transition-colors w-full justify-center"
                   >
-                    <Camera className="w-4 h-4 text-emerald-400" />
+                    <Camera className="w-4 h-4 text-[#0067ff]" />
                     <span>
                       {previewResolvedPhoto
                         ? 'Ganti Foto Hasil Perbaikan'
@@ -451,10 +452,10 @@ export const TicketHistoryDrawer: React.FC<TicketHistoryDrawerProps> = ({
 
                 {/* Catatan Penyelesaian */}
                 <div>
-                  <label className="text-[11px] font-mono uppercase tracking-wider text-slate-400 block mb-1">
-                    Catatan Tindakan / Penyelesaian Teknis:
+                  <label className="text-[11px] uppercase tracking-[0.015em] text-[#9b9ba4] block mb-1.5 font-medium">
+                    Catatan Tindakan / Penyelesaian Teknis
                     {selectedStatus === 'RESOLVED' && (
-                      <span className="text-rose-400 ml-1">*</span>
+                      <span className="text-[#ff3a63] ml-1">*</span>
                     )}
                   </label>
                   <textarea
@@ -462,26 +463,26 @@ export const TicketHistoryDrawer: React.FC<TicketHistoryDrawerProps> = ({
                     value={resolutionNotes}
                     onChange={(e) => setResolutionNotes(e.target.value)}
                     placeholder="Jelaskan komponen yang diganti, isolasi sumber masalah, atau letak pengembalian alat 5R..."
-                    className="w-full bg-slate-900 border border-slate-800 rounded p-2 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-slate-700"
+                    className="w-full bg-[#0c0a2b] border border-[#292a4d] focus:border-[#665eff] rounded-[12px] p-2.5 text-[13px] text-white placeholder-[#9b9ba4] focus:outline-none transition-colors"
                   />
                 </div>
 
                 {/* Log Note */}
                 <div>
-                  <label className="text-[11px] font-mono uppercase tracking-wider text-slate-400 block mb-1">
-                    Catatan Entri Log Audit:
+                  <label className="text-[11px] uppercase tracking-[0.015em] text-[#9b9ba4] block mb-1.5 font-medium">
+                    Catatan Entri Log Audit
                   </label>
                   <input
                     type="text"
                     value={logNotes}
                     onChange={(e) => setLogNotes(e.target.value)}
                     placeholder="Ringkasan pembaruan status untuk riwayat audit..."
-                    className="w-full bg-slate-900 border border-slate-800 rounded px-2.5 py-1.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-slate-700"
+                    className="w-full bg-[#0c0a2b] border border-[#292a4d] focus:border-[#665eff] rounded-[30px] px-3.5 py-2 text-[13px] text-white placeholder-[#9b9ba4] focus:outline-none transition-colors"
                   />
                 </div>
 
                 {validationError && (
-                  <div className="p-2.5 rounded bg-rose-950/50 border border-rose-700/60 text-xs font-mono text-rose-300">
+                  <div className="p-3 rounded-[12px] bg-[#0c0a2b] border border-[#ff3a63]/70 text-xs text-[#ff3a63]">
                     {validationError}
                   </div>
                 )}
@@ -489,7 +490,7 @@ export const TicketHistoryDrawer: React.FC<TicketHistoryDrawerProps> = ({
                 <button
                   type="submit"
                   disabled={isUpdating}
-                  className="w-full py-2 rounded bg-emerald-600 hover:bg-emerald-500 font-mono font-bold text-xs text-white transition-colors disabled:opacity-50"
+                  className="btn-coral-cta w-full py-2.5 text-[13px] disabled:opacity-50"
                 >
                   {isUpdating ? 'Menyimpan Perubahan...' : 'Simpan Pembaruan Tiket'}
                 </button>
@@ -498,12 +499,12 @@ export const TicketHistoryDrawer: React.FC<TicketHistoryDrawerProps> = ({
           </RoleGuard>
 
           {/* 5. Chronological Audit Trail Timeline */}
-          <div className="space-y-3 pt-2">
+          <div className="space-y-3 pt-1">
             <div className="flex items-center justify-between">
-              <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-300">
+              <h4 className="text-[14px] font-display font-semibold tracking-[0.013em] text-white">
                 Audit Trail & Riwayat Siklus Tiket
               </h4>
-              <span className="text-[10px] font-mono text-slate-500">
+              <span className="text-xs text-[#9b9ba4] tabular-nums">
                 {ticketLogs.length} Log Tercatat
               </span>
             </div>
