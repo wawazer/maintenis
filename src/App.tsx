@@ -148,7 +148,7 @@ export const App: React.FC = () => {
         'success'
       );
       await loadDashboardData(true);
-      loadAiBriefing(); // refresh briefing after new incident
+      loadAiBriefing();
     } catch (err: any) {
       showToast('Gagal Mengirim Laporan', err.message, 'error');
       throw err;
@@ -255,100 +255,114 @@ export const App: React.FC = () => {
     return data.users.filter((u) => u.role === 'TEKNISI' || u.role === 'SUPERVISOR');
   }, [data]);
 
-  // LOGIN SCREEN (If not authenticated)
+  // LOGIN SCREEN (Index Twilight Summit Aesthetic)
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-[#090d16] text-slate-100 flex items-center justify-center p-4">
-        <div className="w-full max-w-md rounded-xl border border-slate-800 bg-slate-900/90 shadow-2xl p-6 sm:p-8 space-y-6">
-          <div className="text-center space-y-2">
-            <div className="w-12 h-12 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center font-mono font-bold text-emerald-400 text-xl mx-auto shadow-inner">
-              M
+      <div className="min-h-screen bg-[#04061c] text-white flex flex-col justify-between relative overflow-hidden">
+        {/* Subtle Alpine Horizon Dusk Glow */}
+        <div
+          className="pointer-events-none absolute inset-x-0 top-0 h-72 opacity-25 blur-3xl"
+          style={{
+            background:
+              'radial-gradient(ellipse 70% 50% at 50% 0%, rgb(2, 229, 239) 0%, rgb(72, 89, 235) 55%, rgba(138, 56, 244, 0) 100%)'
+          }}
+        />
+
+        <div className="flex-1 flex items-center justify-center p-4 relative z-10">
+          <div className="w-full max-w-md rounded-[20px] border border-[#292a4d] bg-[#0c0a2b] p-6 sm:p-8 space-y-6">
+            <div className="text-center space-y-2.5">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-[30px] bg-[#13151f] border border-[#292a4d] text-xs font-medium text-[#b4b4bb] mx-auto">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#665eff]" />
+                <span>Command Center Telemetry</span>
+              </div>
+              <h1 className="text-[32px] leading-[1.2] font-semibold font-display tracking-[0.006em] text-white">
+                MAINTENIS
+              </h1>
+              <p className="text-[15px] leading-[1.6] text-[#9b9ba4]">
+                Engineering Monitoring & Field Incident System
+              </p>
             </div>
-            <h1 className="text-xl font-bold font-mono tracking-tight uppercase text-white">
-              MAINTENIS CMMS
-            </h1>
-            <p className="text-xs text-slate-400 font-mono">
-              Engineering Department Monitoring & Incident System
-            </p>
-          </div>
 
-          {/* Google SSO Login */}
-          <div className="space-y-3 pt-2">
-            <span className="text-xs font-mono text-slate-400 uppercase tracking-wider block text-center">
-              Sign In dengan Google SSO
-            </span>
-            <div className="flex justify-center">
-              <GoogleLogin
-                onSuccess={(credentialResponse) => {
-                  if (credentialResponse.credential) {
-                    loginWithGoogleCredential(credentialResponse.credential);
-                  }
-                }}
-                onError={() => {
-                  showToast('Gagal Login', 'Google SSO authentication error', 'error');
-                }}
-                theme="filled_black"
-                shape="pill"
-                text="signin_with"
-              />
+            {/* Google SSO Login */}
+            <div className="space-y-3 pt-1">
+              <span className="text-xs text-[#9b9ba4] block text-center">
+                Masuk menggunakan akun Google Workspace
+              </span>
+              <div className="flex justify-center">
+                <GoogleLogin
+                  onSuccess={(credentialResponse) => {
+                    if (credentialResponse.credential) {
+                      loginWithGoogleCredential(credentialResponse.credential);
+                    }
+                  }}
+                  onError={() => {
+                    showToast('Gagal Login', 'Google SSO authentication error', 'error');
+                  }}
+                  theme="filled_black"
+                  shape="pill"
+                  text="signin_with"
+                />
+              </div>
             </div>
-          </div>
 
-          <div className="relative flex items-center justify-center">
-            <div className="border-t border-slate-800 w-full" />
-            <span className="bg-slate-900 px-3 text-[11px] font-mono text-slate-500 uppercase absolute">
-              ATAU QUICK ROLE SWITCHER
-            </span>
-          </div>
+            <div className="relative flex items-center justify-center">
+              <div className="border-t border-[#202333] w-full" />
+              <span className="bg-[#0c0a2b] px-3 text-[11px] text-[#9b9ba4] uppercase tracking-[0.015em] absolute">
+                Atau Demo Persona
+              </span>
+            </div>
 
-          {/* Quick Demo Persona Switcher */}
-          <div className="space-y-2">
-            <span className="text-[11px] font-mono text-slate-400 uppercase tracking-wider block">
-              Pilih Role Pengguna (Demo Mode Instant Testing):
-            </span>
-            <div className="grid grid-cols-2 gap-2">
-              {(['PELAPOR', 'TEKNISI', 'SUPERVISOR', 'ADMIN'] as UserRole[]).map((r) => (
-                <button
-                  key={r}
-                  onClick={() => switchDemoRole(r)}
-                  className="p-2.5 rounded-lg border border-slate-800 bg-slate-950/60 hover:bg-slate-800 hover:border-slate-700 text-left transition-colors flex items-center gap-2 group"
-                >
-                  <KeyRound className="w-3.5 h-3.5 text-slate-500 group-hover:text-emerald-400" />
-                  <div>
-                    <div className="text-xs font-mono font-bold text-slate-200 group-hover:text-white">
-                      {r}
+            {/* Quick Demo Persona Switcher */}
+            <div className="space-y-2">
+              <div className="grid grid-cols-2 gap-2">
+                {(['PELAPOR', 'TEKNISI', 'SUPERVISOR', 'ADMIN'] as UserRole[]).map((r) => (
+                  <button
+                    key={r}
+                    onClick={() => switchDemoRole(r)}
+                    className="p-3 rounded-[12px] border border-[#202333] bg-[#13151f] hover:bg-[#2c2b52]/50 hover:border-[#292a4d] text-left transition-colors flex items-center gap-2.5 group"
+                  >
+                    <KeyRound className="w-3.5 h-3.5 text-[#9b9ba4] group-hover:text-white shrink-0" />
+                    <div className="min-w-0">
+                      <div className="text-[13px] font-medium text-white">
+                        {r}
+                      </div>
+                      <div className="text-[11px] text-[#9b9ba4] truncate">
+                        {r === 'PELAPOR'
+                          ? 'Operator Lapangan'
+                          : r === 'TEKNISI'
+                          ? 'Staff Maintenance'
+                          : r === 'SUPERVISOR'
+                          ? 'Lead Engineer'
+                          : 'System Admin'}
+                      </div>
                     </div>
-                    <div className="text-[10px] text-slate-500 font-mono">
-                      {r === 'PELAPOR'
-                        ? 'Operator Lapangan'
-                        : r === 'TEKNISI'
-                        ? 'Staff Maintenance'
-                        : r === 'SUPERVISOR'
-                        ? 'Lead Engineer'
-                        : 'Full System Admin'}
-                    </div>
-                  </div>
-                </button>
-              ))}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
-
-          <div className="pt-2 text-center text-[11px] font-mono text-slate-500">
-            Powered by Google Sheets + Apps Script + Gemini 2.5 Flash
           </div>
         </div>
       </div>
     );
   }
 
-  // MAIN OPERATIONAL DASHBOARD
+  // MAIN OPERATIONAL DASHBOARD (Index Twilight Summit Command Center)
   return (
     <div
-      className={`min-h-screen bg-[#090d16] text-slate-100 flex flex-col ${
+      className={`min-h-screen bg-[#04061c] text-white flex flex-col relative ${
         isTvMode ? 'tv-kiosk-mode' : ''
       }`}
     >
-      {/* 1. Top Control Bar */}
+      {/* Subtle Twilight Horizon Ambient Glow behind Top Navigation */}
+      <div
+        className="pointer-events-none absolute inset-x-0 top-0 h-48 opacity-20 blur-3xl"
+        style={{
+          background:
+            'radial-gradient(ellipse 65% 45% at 50% 0%, rgb(2, 229, 239) 0%, rgb(72, 89, 235) 65%, rgba(138, 56, 244, 0) 100%)'
+        }}
+      />
+
+      {/* 1. Floating Frosted Pill Control Bar */}
       <TopControlBar
         lastSyncTime={lastSyncTime}
         isSyncing={isSyncing}
@@ -364,9 +378,9 @@ export const App: React.FC = () => {
         onOpenUserManagement={() => setIsUserManagementOpen(true)}
       />
 
-      {/* Main Content Area */}
-      <main className="flex-1 p-3 sm:p-5 max-w-[1600px] w-full mx-auto space-y-4">
-        {/* 2. 4 Core KPI Cards (Industrial Tabular Figures) */}
+      {/* Main Content Area (1200px Centered Command Grid) */}
+      <main className="relative z-10 flex-1 px-3 sm:px-5 pt-6 pb-10 max-w-[1200px] w-full mx-auto space-y-6">
+        {/* 2. 4 Core KPI Cards */}
         <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           {isLoading ? (
             <>
@@ -377,19 +391,17 @@ export const App: React.FC = () => {
             </>
           ) : (
             <>
-              {/* KPI 1: Equipment Availability */}
               <KpiCard
                 title="Equipment Availability"
                 value={kpis.availability}
                 subtitle="Rasio aset siap operasi vs total aset kritis"
                 icon={Activity}
                 badge={{
-                  text: parseFloat(kpis.availability) >= 90 ? 'OPTIMAL' : 'WATCHLIST',
+                  text: parseFloat(kpis.availability) >= 90 ? 'Optimal' : 'Watchlist',
                   variant: parseFloat(kpis.availability) >= 90 ? 'positive' : 'warning'
                 }}
               />
 
-              {/* KPI 2: MTTR */}
               <KpiCard
                 title="MTTR (Mean Time to Repair)"
                 value={kpis.mttr}
@@ -401,35 +413,33 @@ export const App: React.FC = () => {
                 icon={Clock}
                 badge={{
                   text: kpis.mttrHours > 3 ? 'SLA > 3.0h' : 'SLA < 3.0h',
-                  variant: kpis.mttrHours > 3 ? 'warning' : 'positive'
+                  variant: kpis.mttrHours > 3 ? 'critical' : 'positive'
                 }}
               />
 
-              {/* KPI 3: Active Tickets */}
               <KpiCard
                 title="Active Incident Tickets"
                 value={kpis.activeTickets}
                 subtitle="Antrean perbaikan & penertiban aktif"
                 icon={AlertTriangle}
                 badge={{
-                  text: kpis.activeTickets > 5 ? 'HIGH LOAD' : 'NOMINAL',
+                  text: kpis.activeTickets > 5 ? 'High Load' : 'Nominal',
                   variant: kpis.activeTickets > 5 ? 'critical' : 'neutral'
                 }}
                 breakdown={[
-                  { label: 'Open', count: kpis.openCount, color: 'bg-sky-400' },
-                  { label: 'Progress', count: kpis.inProgressCount, color: 'bg-amber-400' },
-                  { label: 'Hold', count: kpis.onHoldCount, color: 'bg-orange-400' }
+                  { label: 'Open', count: kpis.openCount, color: 'bg-[#665eff]' },
+                  { label: 'Progress', count: kpis.inProgressCount, color: 'bg-[#0067ff]' },
+                  { label: 'Hold', count: kpis.onHoldCount, color: 'bg-[#ff3a63]' }
                 ]}
               />
 
-              {/* KPI 4: 5R / Housekeeping Alerts */}
               <KpiCard
                 title="5R Housekeeping Alerts"
                 value={kpis.housekeepingAlerts}
                 subtitle="Alat tidak pada tempatnya & hazard rute"
                 icon={Wrench}
                 badge={{
-                  text: kpis.housekeepingAlerts > 0 ? 'ACTION NEEDED' : 'CLEAN',
+                  text: kpis.housekeepingAlerts > 0 ? 'Action Needed' : 'Clean',
                   variant: kpis.housekeepingAlerts > 0 ? 'warning' : 'positive'
                 }}
               />
@@ -437,8 +447,8 @@ export const App: React.FC = () => {
           )}
         </section>
 
-        {/* 3. Operational Charts & Critical Feed (Above the fold priority) */}
-        <section className="grid grid-cols-1 lg:grid-cols-2 gap-3.5">
+        {/* 3. Critical Asset Watchlist & Ratio Charts */}
+        <section className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <CriticalAssetWatchlist
             assets={data?.assets || []}
             incidents={shiftFilteredIncidents}
@@ -454,7 +464,7 @@ export const App: React.FC = () => {
           />
         </section>
 
-        {/* 4. Active Ticket Queue with Instant Filter Tabs */}
+        {/* 4. Active Ticket Queue */}
         <section>
           <ActiveTicketQueue
             incidents={shiftFilteredIncidents}
@@ -477,16 +487,20 @@ export const App: React.FC = () => {
         </section>
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-slate-900 bg-slate-950 px-4 py-3 text-xs font-mono text-slate-500 flex flex-wrap items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-emerald-400" />
-          <span>CMMS Telemetry Engine</span>
-        </div>
-        <div className="flex items-center gap-3">
-          <span>AI Engine: Gemini 2.5 Flash / Groq Llama 3.3</span>
-          <span>•</span>
-          <span>Role: {user?.role || 'Guest'} ({user?.nama_lengkap || '-'})</span>
+      {/* Minimalist Footer */}
+      <footer className="border-t border-[#202333] bg-[#02030b] px-4 py-3.5 text-xs text-[#9b9ba4]">
+        <div className="max-w-[1200px] mx-auto flex flex-wrap items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#ffff00]" />
+            <span className="text-[#b4b4bb] font-medium">MAINTENIS Telemetry Engine</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <span>Gemini 2.5 Flash / Groq Llama 3.3</span>
+            <span className="text-[#292a4d]">â€¢</span>
+            <span>
+              {user?.role || 'Guest'} ({user?.nama_lengkap || '-'})
+            </span>
+          </div>
         </div>
       </footer>
 
