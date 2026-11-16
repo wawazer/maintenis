@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Bot, RefreshCw, AlertTriangle, Sparkles, MapPin, CheckCircle } from 'lucide-react';
+import { Bot, RefreshCw, AlertTriangle, MapPin, CheckCircle } from 'lucide-react';
 import { AiTelemetryBriefing } from '../../types';
 import { Skeleton } from '../common/SkeletonLoader';
 
@@ -27,50 +27,48 @@ export const AiTelemetryBanner: React.FC<AiTelemetryBannerProps> = ({
 
   const threatConfig = {
     CRITICAL: {
-      border: 'border-rose-500/40 bg-rose-950/20',
-      badge: 'bg-rose-900/60 text-rose-300 border-rose-600/50',
-      text: 'CRITICAL ATTENTION'
+      border: 'border-[#ff3a63]/70',
+      dot: 'bg-[#ff3a63]',
+      text: 'Critical Attention'
     },
     ELEVATED: {
-      border: 'border-amber-500/40 bg-amber-950/20',
-      badge: 'bg-amber-900/60 text-amber-300 border-amber-600/50',
-      text: 'ELEVATED VIGILANCE'
+      border: 'border-[#0067ff]/70',
+      dot: 'bg-[#0067ff]',
+      text: 'Elevated Vigilance'
     },
     NOMINAL: {
-      border: 'border-cyan-500/30 bg-cyan-950/15',
-      badge: 'bg-cyan-900/60 text-cyan-300 border-cyan-600/50',
-      text: 'TELEMETRY NOMINAL'
+      border: 'border-[#ffff00]/60',
+      dot: 'bg-[#ffff00]',
+      text: 'Telemetry Nominal'
     }
   };
 
   const threat = briefing ? threatConfig[briefing.threat_level] : threatConfig.NOMINAL;
 
   return (
-    <div
-      className={`relative rounded-lg border p-4 md:p-5 transition-all ${threat.border} backdrop-blur-sm`}
-    >
+    <div className="rounded-[12px] border border-[#292a4d] bg-[#0c0a2b] p-4">
       {/* Header Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 mb-3.5 pb-2.5 border-b border-slate-800">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-3.5 pb-3 border-b border-[#202333]">
         <div className="flex items-center gap-2.5">
-          <div className="p-1.5 rounded bg-cyan-950/60 text-cyan-400 border border-cyan-700/50">
-            <Bot className="w-4 h-4" />
+          <div className="w-7 h-7 rounded-[6px] bg-[#13151f] border border-[#202333] flex items-center justify-center text-[#665eff]">
+            <Bot className="w-3.5 h-3.5" />
           </div>
           <div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-mono font-bold tracking-wider uppercase text-cyan-200">
+            <div className="flex flex-wrap items-center gap-2">
+              <h3 className="text-[15px] font-display font-semibold tracking-[0.013em] text-white">
                 AI Operational Telemetry Briefing
-              </span>
-              <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-800 text-slate-300 border border-slate-700">
+              </h3>
+              <span className="text-[11px] px-2.5 py-0.5 rounded-[30px] bg-[#13151f] text-[#b4b4bb] border border-[#292a4d]">
                 Gemini 2.5 Flash / Groq Llama 3.3
               </span>
               {briefing?.is_fallback && (
-                <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-800/80 text-amber-400 border border-amber-800/60">
+                <span className="text-[11px] px-2.5 py-0.5 rounded-[30px] bg-[#13151f] text-[#b4b4bb] border border-[#665eff]/60">
                   Deterministic Fallback
                 </span>
               )}
             </div>
-            <p className="text-[11px] text-slate-400 font-mono">
-              Analisis Anomali Sheet & Aset • Cache 15 Menit
+            <p className="text-xs text-[#9b9ba4]">
+              Analisis anomali telemetri & aset â€¢ Cache 15 menit
             </p>
           </div>
         </div>
@@ -78,84 +76,85 @@ export const AiTelemetryBanner: React.FC<AiTelemetryBannerProps> = ({
         <div className="flex items-center gap-2">
           {briefing && (
             <span
-              className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded border uppercase tracking-wider ${threat.badge}`}
+              className={`inline-flex items-center gap-1.5 text-[11px] font-medium px-3 py-1 rounded-[30px] bg-[#13151f] border text-white ${threat.border}`}
             >
+              <span className={`w-1.5 h-1.5 rounded-full ${threat.dot}`} />
               {threat.text}
             </span>
           )}
           <button
             onClick={handleRefresh}
             disabled={loading || isRefreshing}
-            className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono font-medium rounded border border-slate-700 bg-slate-800/80 text-slate-300 hover:text-white hover:border-slate-600 disabled:opacity-50 transition-colors"
+            className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-medium rounded-[30px] border border-[#292a4d] bg-[#13151f] text-[#b4b4bb] hover:text-white hover:bg-[#2c2b52]/50 disabled:opacity-50 transition-colors"
             title="Refresh AI Operational Telemetry Analysis"
           >
             <RefreshCw
-              className={`w-3.5 h-3.5 ${loading || isRefreshing ? 'animate-spin text-cyan-400' : ''}`}
+              className={`w-3.5 h-3.5 ${loading || isRefreshing ? 'animate-spin text-[#0067ff]' : ''}`}
             />
             <span>Refresh AI</span>
           </button>
         </div>
       </div>
 
-      {/* Content Area: 3 Structured Insights in Bahasa Indonesia */}
+      {/* Content Area: 3 Structured Insights */}
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          <Skeleton className="h-20 w-full" />
-          <Skeleton className="h-20 w-full" />
-          <Skeleton className="h-20 w-full" />
+          <Skeleton className="h-24 w-full rounded-[12px] bg-[#13151f]" />
+          <Skeleton className="h-24 w-full rounded-[12px] bg-[#13151f]" />
+          <Skeleton className="h-24 w-full rounded-[12px] bg-[#13151f]" />
         </div>
       ) : briefing ? (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           {/* 1. Recurring Failure Alert */}
-          <div className="p-3 rounded-md bg-slate-900/80 border border-slate-800 flex flex-col justify-between">
+          <div className="p-3.5 rounded-[12px] bg-[#13151f] border border-[#202333] flex flex-col justify-between">
             <div>
-              <div className="flex items-center gap-1.5 text-rose-400 mb-1.5">
-                <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
-                <span className="text-[11px] font-mono font-bold tracking-wider uppercase">
+              <div className="flex items-center gap-1.5 text-white mb-1.5">
+                <AlertTriangle className="w-3.5 h-3.5 text-[#ff3a63] shrink-0" />
+                <span className="text-[11px] font-medium tracking-[0.015em] uppercase text-[#b4b4bb]">
                   Recurring Failure Alert
                 </span>
               </div>
-              <p className="text-xs text-slate-200 leading-relaxed font-sans">
+              <p className="text-[13px] text-[#b4b4bb] leading-[1.55]">
                 {briefing.recurring_failure_alert}
               </p>
             </div>
-            <span className="text-[10px] font-mono text-slate-500 mt-2">
+            <span className="text-[11px] text-[#9b9ba4] mt-2.5">
               SLA Risk Mitigation
             </span>
           </div>
 
           {/* 2. 5R / Housekeeping Hotspot */}
-          <div className="p-3 rounded-md bg-slate-900/80 border border-slate-800 flex flex-col justify-between">
+          <div className="p-3.5 rounded-[12px] bg-[#13151f] border border-[#202333] flex flex-col justify-between">
             <div>
-              <div className="flex items-center gap-1.5 text-amber-400 mb-1.5">
-                <MapPin className="w-3.5 h-3.5 shrink-0" />
-                <span className="text-[11px] font-mono font-bold tracking-wider uppercase">
+              <div className="flex items-center gap-1.5 text-white mb-1.5">
+                <MapPin className="w-3.5 h-3.5 text-[#665eff] shrink-0" />
+                <span className="text-[11px] font-medium tracking-[0.015em] uppercase text-[#b4b4bb]">
                   5R Housekeeping Hotspot
                 </span>
               </div>
-              <p className="text-xs text-slate-200 leading-relaxed font-sans">
+              <p className="text-[13px] text-[#b4b4bb] leading-[1.55]">
                 {briefing.housekeeping_hotspot}
               </p>
             </div>
-            <span className="text-[10px] font-mono text-slate-500 mt-2">
+            <span className="text-[11px] text-[#9b9ba4] mt-2.5">
               Safety Hazard & Tool Crib Compliance
             </span>
           </div>
 
           {/* 3. Actionable Maintenance Recommendation */}
-          <div className="p-3 rounded-md bg-slate-900/80 border border-slate-800 flex flex-col justify-between">
+          <div className="p-3.5 rounded-[12px] bg-[#13151f] border border-[#202333] flex flex-col justify-between">
             <div>
-              <div className="flex items-center gap-1.5 text-cyan-400 mb-1.5">
-                <CheckCircle className="w-3.5 h-3.5 shrink-0" />
-                <span className="text-[11px] font-mono font-bold tracking-wider uppercase">
+              <div className="flex items-center gap-1.5 text-white mb-1.5">
+                <CheckCircle className="w-3.5 h-3.5 text-[#0067ff] shrink-0" />
+                <span className="text-[11px] font-medium tracking-[0.015em] uppercase text-[#b4b4bb]">
                   Supervisor Action Plan
                 </span>
               </div>
-              <p className="text-xs text-slate-200 leading-relaxed font-sans">
+              <p className="text-[13px] text-[#b4b4bb] leading-[1.55]">
                 {briefing.actionable_recommendation}
               </p>
             </div>
-            <span className="text-[10px] font-mono text-slate-500 mt-2">
+            <span className="text-[11px] text-[#9b9ba4] mt-2.5">
               Shift Tactical Directive
             </span>
           </div>
