@@ -12,104 +12,118 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
   size = 'md',
   showDot = true
 }) => {
-  // Semantic Color Palette (Anti-Slop Industrial Rules)
-  // Emerald: Ready, Resolved
-  // Amber: In Progress, Assigned, 5R Housekeeping, Urgent
-  // Rose: Breakdown, Critical
-  // Slate: Neutral, Closed, Normal
-  // Sky/Cyan: Submitted, Telemetry
+  // Index Design Tokens: Pill shape (30px), #0c0a2b fill, 1px border in matching saturated color, 6px dot
+  // Electric Blue (#0067ff) = in-progress / active
+  // Arc Violet (#665eff) = planned / assigned / submitted
+  // Ember Coral (#ff3a63) = blocked / breakdown / critical
+  // Chartreuse (#ffff00) = done / ready / resolved
 
-  let bgClass = 'bg-slate-900/60 border-slate-700 text-slate-300';
-  let dotClass = 'bg-slate-400';
+  let borderClass = 'border-[#292a4d]';
+  let dotStyle = 'bg-[#9b9ba4]';
+  let textClass = 'text-[#b4b4bb]';
   let label = status;
 
   switch (status) {
     // Ticket Statuses
     case 'SUBMITTED':
-      bgClass = 'bg-sky-950/40 border-sky-600/50 text-sky-300';
-      dotClass = 'bg-sky-400 animate-pulse';
-      label = 'SUBMITTED';
+      borderClass = 'border-[#665eff]/60';
+      dotStyle = 'bg-[#665eff]';
+      textClass = 'text-white';
+      label = 'Submitted';
       break;
     case 'ASSIGNED':
-      bgClass = 'bg-amber-950/40 border-amber-600/50 text-amber-300';
-      dotClass = 'bg-amber-400';
-      label = 'ASSIGNED';
+      borderClass = 'border-[#665eff]/80';
+      dotStyle = 'bg-[#665eff]';
+      textClass = 'text-white';
+      label = 'Assigned';
       break;
     case 'IN_PROGRESS':
-      bgClass = 'bg-amber-950/40 border-amber-500/60 text-amber-300';
-      dotClass = 'bg-amber-400 animate-pulse';
-      label = 'IN PROGRESS';
+      borderClass = 'border-[#0067ff]/80';
+      dotStyle = 'bg-[#0067ff] animate-pulse';
+      textClass = 'text-white';
+      label = 'In Progress';
       break;
     case 'ON_HOLD':
-      bgClass = 'bg-orange-950/40 border-orange-600/50 text-orange-300';
-      dotClass = 'bg-orange-400';
-      label = 'ON HOLD';
+      borderClass = 'border-[#ff3a63]/60';
+      dotStyle = 'bg-[#ff3a63]';
+      textClass = 'text-[#b4b4bb]';
+      label = 'On Hold';
       break;
     case 'RESOLVED':
-      bgClass = 'bg-emerald-950/40 border-emerald-600/50 text-emerald-300';
-      dotClass = 'bg-emerald-400';
-      label = 'RESOLVED';
+      borderClass = 'border-[#ffff00]/70';
+      dotStyle = 'bg-[#ffff00]';
+      textClass = 'text-white';
+      label = 'Resolved';
       break;
     case 'CLOSED':
-      bgClass = 'bg-slate-900/80 border-slate-700 text-slate-400';
-      dotClass = 'bg-slate-500';
-      label = 'CLOSED';
+      borderClass = 'border-[#292a4d]';
+      dotStyle = 'bg-[#9b9ba4]';
+      textClass = 'text-[#9b9ba4]';
+      label = 'Closed';
       break;
 
     // Asset Statuses
     case 'Ready':
-      bgClass = 'bg-emerald-950/40 border-emerald-600/50 text-emerald-300';
-      dotClass = 'bg-emerald-400';
-      label = 'READY';
+      borderClass = 'border-[#ffff00]/70';
+      dotStyle = 'bg-[#ffff00]';
+      textClass = 'text-white';
+      label = 'Ready';
       break;
     case 'Breakdown':
-      bgClass = 'bg-rose-950/50 border-rose-600/60 text-rose-300';
-      dotClass = 'bg-rose-500 animate-pulse';
-      label = 'BREAKDOWN';
+      borderClass = 'border-[#ff3a63]/90';
+      dotStyle = 'bg-[#ff3a63] animate-pulse';
+      textClass = 'text-white';
+      label = 'Breakdown';
       break;
     case 'Maintenance':
-      bgClass = 'bg-amber-950/40 border-amber-600/50 text-amber-300';
-      dotClass = 'bg-amber-400';
-      label = 'MAINTENANCE';
+      borderClass = 'border-[#0067ff]/80';
+      dotStyle = 'bg-[#0067ff]';
+      textClass = 'text-white';
+      label = 'Maintenance';
       break;
 
     // Urgency Levels
     case 'Critical':
-      bgClass = 'bg-rose-950/50 border-rose-600/70 text-rose-300';
-      dotClass = 'bg-rose-500 animate-pulse';
-      label = 'CRITICAL';
+      borderClass = 'border-[#ff3a63]/90';
+      dotStyle = 'bg-[#ff3a63]';
+      textClass = 'text-white';
+      label = 'Critical';
       break;
     case 'Urgent':
-      bgClass = 'bg-amber-950/40 border-amber-600/60 text-amber-300';
-      dotClass = 'bg-amber-400';
-      label = 'URGENT';
+      borderClass = 'border-[#0067ff]/80';
+      dotStyle = 'bg-[#0067ff]';
+      textClass = 'text-white';
+      label = 'Urgent';
       break;
     case 'Normal':
-      bgClass = 'bg-slate-800/60 border-slate-700 text-slate-300';
-      dotClass = 'bg-slate-400';
-      label = 'NORMAL';
+      borderClass = 'border-[#292a4d]';
+      dotStyle = 'bg-[#9b9ba4]';
+      textClass = 'text-[#b4b4bb]';
+      label = 'Normal';
       break;
 
     // Categories
     case 'KERUSAKAN':
-      bgClass = 'bg-rose-950/30 border-rose-800/40 text-rose-300';
-      dotClass = 'bg-rose-400';
-      label = 'KERUSAKAN';
+      borderClass = 'border-[#ff3a63]/60';
+      dotStyle = 'bg-[#ff3a63]';
+      textClass = 'text-[#b4b4bb]';
+      label = 'Kerusakan';
       break;
     case 'ALAT_TIDAK_PADA_TEMPATNYA':
-      bgClass = 'bg-amber-950/30 border-amber-800/40 text-amber-300';
-      dotClass = 'bg-amber-400';
-      label = '5R HOUSEKEEPING';
+      borderClass = 'border-[#665eff]/60';
+      dotStyle = 'bg-[#665eff]';
+      textClass = 'text-[#b4b4bb]';
+      label = '5R Housekeeping';
       break;
   }
 
-  const sizeClasses = size === 'sm' ? 'px-1.5 py-0.5 text-[10px]' : 'px-2.5 py-1 text-xs';
+  const sizeClasses = size === 'sm' ? 'px-2.5 py-0.5 text-[11px]' : 'px-3 py-1 text-xs';
 
   return (
     <span
-      className={`inline-flex items-center gap-1.5 font-mono uppercase tracking-wider font-semibold rounded border ${bgClass} ${sizeClasses} tabular-nums`}
+      className={`inline-flex items-center gap-1.5 rounded-[30px] bg-[#0c0a2b] border font-medium tracking-[0.012em] tabular-nums ${borderClass} ${textClass} ${sizeClasses}`}
     >
-      {showDot && <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${dotClass}`} />}
+      {showDot && <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${dotStyle}`} />}
       {label}
     </span>
   );
