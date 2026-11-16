@@ -495,8 +495,6 @@ export const App: React.FC = () => {
             <span className="text-[#b4b4bb] font-medium">MAINTENIS Telemetry Engine</span>
           </div>
           <div className="flex items-center gap-3">
-            <span>Gemini 2.5 Flash / Groq Llama 3.3</span>
-            <span className="text-[#292a4d]">â€¢</span>
             <span>
               {user?.role || 'Guest'} ({user?.nama_lengkap || '-'})
             </span>
