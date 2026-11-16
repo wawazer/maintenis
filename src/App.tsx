@@ -3,31 +3,29 @@ import {
   Activity,
   Clock,
   AlertTriangle,
-  Layers,
   Wrench,
-  CheckCircle,
-  ShieldAlert,
-  Bot,
-  LogIn,
-  KeyRound,
-  Tv,
-  Users
+  KeyRound
 } from 'lucide-react';
 import { GoogleLogin } from '@react-oauth/google';
-import { useAuth, DEMO_PROFILES } from './context/AuthContext';
+import { useAuth } from './context/AuthContext';
 import { useToast } from './components/common/Toast';
 import { maintenanceApi } from './services/maintenanceApi';
 import {
   DashboardTelemetryData,
   AiTelemetryBriefing,
-  IncidentReport,
-  AssetMaster,
-  TicketHistoryLog,
-  UserProfile,
   CreateTicketPayload,
   UpdateTicketPayload,
   UserRole
 } from './types';
+
+function getShiftFromTimestamp(isoString: string): string {
+  const date = new Date(isoString);
+  if (Number.isNaN(date.getTime())) return 'Shift 1 (Pagi)';
+  const hour = date.getHours();
+  if (hour >= 6 && hour < 14) return 'Shift 1 (Pagi)';
+  if (hour >= 14 && hour < 22) return 'Shift 2 (Sore)';
+  return 'Shift 3 (Malam)';
+}
 
 // Components
 import { TopControlBar } from './components/dashboard/TopControlBar';
@@ -43,8 +41,7 @@ import { AiDataCopilot } from './components/ai/AiDataCopilot';
 import { UserManagementModal } from './components/users/UserManagementModal';
 
 export const App: React.FC = () => {
-  const { user, isAuthenticated, loginWithGoogleCredential, switchDemoRole, isDemoMode } =
-    useAuth();
+  const { user, isAuthenticated, loginWithGoogleCredential, switchDemoRole } = useAuth();
   const { showToast } = useToast();
 
   // Telemetry Data State
@@ -65,7 +62,33 @@ export const App: React.FC = () => {
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [isCopilotOpen, setIsCopilotOpen] = useState(false);
   const [isUserManagementOpen, setIsUserManagementOpen] = useState(false);
-  const [activeTicket, setActiveTicket] = useState<IncidentReport | null>(null);
+  const [activeTicketId, setActiveTicketId] = useState<string | null>(null);
+
+  const activeTicket = useMemo(() => {
+    if (!activeTicketId || !data) return null;
+    return data.incidents.find((i) => i.ticket_id === activeTicketId) || null;
+  }, [activeTicketId, data]);
+
+  useEffect(() => {
+    if (isTvMode) {
+      document.body.classList.add('tv-kiosk-mode');
+    } else {
+      document.body.classList.remove('tv-kiosk-mode');
+    }
+    return () => document.body.classList.remove('tv-kiosk-mode');
+  }, [isTvMode]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return;
+      if (activeTicketId) setActiveTicketId(null);
+      else if (isReportModalOpen) setIsReportModalOpen(false);
+      else if (isCopilotOpen) setIsCopilotOpen(false);
+      else if (isUserManagementOpen) setIsUserManagementOpen(false);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [activeTicketId, isReportModalOpen, isCopilotOpen, isUserManagementOpen]);
 
   // Load Dashboard Data
   const loadDashboardData = useCallback(async (silent: boolean = false) => {
@@ -100,13 +123,20 @@ export const App: React.FC = () => {
     loadDashboardData();
     loadAiBriefing();
 
-    // Auto-polling interval: 30 seconds
     const interval = setInterval(() => {
       loadDashboardData(true);
     }, 30000);
 
     return () => clearInterval(interval);
   }, [loadDashboardData, loadAiBriefing]);
+
+  const shiftFilteredIncidents = useMemo(() => {
+    if (!data) return [];
+    if (selectedShift === 'ALL') return data.incidents;
+    return data.incidents.filter(
+      (inc) => getShiftFromTimestamp(inc.created_at) === selectedShift
+    );
+  }, [data, selectedShift]);
 
   // Handle Ticket Submission
   const handleCreateTicket = async (payload: CreateTicketPayload) => {
@@ -163,8 +193,9 @@ export const App: React.FC = () => {
   const kpis = useMemo(() => {
     if (!data) {
       return {
-        availability: '92.4%',
-        mttr: '2.8 Jam',
+        availability: '100%',
+        mttr: '-',
+        mttrHours: 0,
         activeTickets: 0,
         housekeepingAlerts: 0,
         openCount: 0,
@@ -177,7 +208,23 @@ export const App: React.FC = () => {
     const readyAssets = data.assets.filter((a) => a.status_operasional === 'Ready').length;
     const availabilityPct = totalAssets > 0 ? ((readyAssets / totalAssets) * 100).toFixed(1) : '100';
 
-    const activeTicketsList = data.incidents.filter(
+    const resolvedWithDuration = shiftFilteredIncidents.filter(
+      (i) => (i.status_terkini === 'RESOLVED' || i.status_terkini === 'CLOSED') && i.resolved_at
+    );
+
+    let mttrLabel = 'N/A';
+    let mttrHours = 0;
+    if (resolvedWithDuration.length > 0) {
+      const totalMs = resolvedWithDuration.reduce((sum, item) => {
+        const start = new Date(item.created_at).getTime();
+        const end = new Date(item.resolved_at!).getTime();
+        return sum + Math.max(0, end - start);
+      }, 0);
+      mttrHours = totalMs / resolvedWithDuration.length / 3600000;
+      mttrLabel = mttrHours < 1 ? `${Math.round(mttrHours * 60)} Mnt` : `${mttrHours.toFixed(1)} Jam`;
+    }
+
+    const activeTicketsList = shiftFilteredIncidents.filter(
       (i) => i.status_terkini !== 'RESOLVED' && i.status_terkini !== 'CLOSED'
     );
     const openCount = activeTicketsList.filter((i) => i.status_terkini === 'SUBMITTED').length;
@@ -192,14 +239,15 @@ export const App: React.FC = () => {
 
     return {
       availability: `${availabilityPct}%`,
-      mttr: '2.4 Jam',
+      mttr: mttrLabel,
+      mttrHours,
       activeTickets: activeTicketsList.length,
       housekeepingAlerts,
       openCount,
       inProgressCount,
       onHoldCount
     };
-  }, [data]);
+  }, [data, shiftFilteredIncidents]);
 
   // Technicians List for assignment dropdown
   const technicians = useMemo(() => {
@@ -345,11 +393,15 @@ export const App: React.FC = () => {
               <KpiCard
                 title="MTTR (Mean Time to Repair)"
                 value={kpis.mttr}
-                subtitle="Rata-rata durasi perbaikan shift berjalan"
+                subtitle={
+                  selectedShift === 'ALL'
+                    ? 'Rata-rata durasi penyelesaian tiket'
+                    : `Rata-rata durasi (${selectedShift})`
+                }
                 icon={Clock}
                 badge={{
-                  text: 'SLA < 3.0h',
-                  variant: 'positive'
+                  text: kpis.mttrHours > 3 ? 'SLA > 3.0h' : 'SLA < 3.0h',
+                  variant: kpis.mttrHours > 3 ? 'warning' : 'positive'
                 }}
               />
 
@@ -385,40 +437,42 @@ export const App: React.FC = () => {
           )}
         </section>
 
-        {/* 3. Embedded AI Operational Telemetry Briefing */}
-        <section>
-          <AiTelemetryBanner
-            briefing={aiBriefing}
-            loading={isAiLoading}
-            onRefresh={loadAiBriefing}
-          />
-        </section>
-
-        {/* 4. Operational Charts & Critical Feed (Dual Column) */}
+        {/* 3. Operational Charts & Critical Feed (Above the fold priority) */}
         <section className="grid grid-cols-1 lg:grid-cols-2 gap-3.5">
-          <MaintenanceRatioChart
-            incidents={data?.incidents || []}
-            assets={data?.assets || []}
-          />
-
           <CriticalAssetWatchlist
             assets={data?.assets || []}
-            incidents={data?.incidents || []}
+            incidents={shiftFilteredIncidents}
             onSelectAsset={(assetId) => {
               setSelectedAssetId(assetId);
               showToast('Filter Aset Diterapkan', `Menampilkan tiket untuk aset ${assetId}`, 'info');
             }}
           />
+
+          <MaintenanceRatioChart
+            incidents={shiftFilteredIncidents}
+            assets={data?.assets || []}
+          />
         </section>
 
-        {/* 5. Active Ticket Queue with Instant Filter Tabs */}
+        {/* 4. Active Ticket Queue with Instant Filter Tabs */}
         <section>
           <ActiveTicketQueue
-            incidents={data?.incidents || []}
+            incidents={shiftFilteredIncidents}
             searchQuery={searchQuery}
+            selectedShift={selectedShift}
+            onClearShiftFilter={() => setSelectedShift('ALL')}
             selectedAssetId={selectedAssetId}
             onClearAssetFilter={() => setSelectedAssetId(null)}
-            onSelectTicket={(ticket) => setActiveTicket(ticket)}
+            onSelectTicket={(ticket) => setActiveTicketId(ticket.ticket_id)}
+          />
+        </section>
+
+        {/* 5. Embedded AI Operational Telemetry Briefing */}
+        <section className="tv-hide">
+          <AiTelemetryBanner
+            briefing={aiBriefing}
+            loading={isAiLoading}
+            onRefresh={loadAiBriefing}
           />
         </section>
       </main>
@@ -449,11 +503,11 @@ export const App: React.FC = () => {
         ticket={activeTicket}
         logs={data?.logs || []}
         technicians={technicians}
-        onClose={() => setActiveTicket(null)}
+        onClose={() => setActiveTicketId(null)}
         onUpdateTicket={handleUpdateTicket}
         onFilterByAsset={(astId) => {
           setSelectedAssetId(astId);
-          setActiveTicket(null);
+          setActiveTicketId(null);
         }}
       />
 

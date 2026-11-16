@@ -43,5 +43,9 @@
 
 /* TV / Kiosk Mode helper */
 body.tv-kiosk-mode {
-  font-size: 1.15rem;
+  font-size: 1.125rem;
+}
+
+body.tv-kiosk-mode .tv-hide {
+  display: none !important;
 }

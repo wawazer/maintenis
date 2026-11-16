@@ -9,8 +9,7 @@ import {
   Bar,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Legend
+  CartesianGrid
 } from 'recharts';
 import { IncidentReport, AssetMaster } from '../../types';
 
@@ -23,7 +22,7 @@ export const MaintenanceRatioChart: React.FC<MaintenanceRatioChartProps> = ({
   incidents,
   assets
 }) => {
-  // Aggregate ratio of Kerusakan vs 5R Housekeeping
+  // Ticket-only category breakdown (ensures center Total Tiket matches sum of slices)
   const breakdownCount = incidents.filter((i) => i.kategori_laporan === 'KERUSAKAN').length;
   const housekeepingCount = incidents.filter(
     (i) => i.kategori_laporan === 'ALAT_TIDAK_PADA_TEMPATNYA'
@@ -31,9 +30,11 @@ export const MaintenanceRatioChart: React.FC<MaintenanceRatioChartProps> = ({
 
   const pieData = [
     { name: 'Corrective (Kerusakan)', value: breakdownCount, color: '#f43f5e' },
-    { name: '5R Housekeeping', value: housekeepingCount, color: '#f59e0b' },
-    { name: 'Preventive Ready', value: assets.filter((a) => a.status_operasional === 'Ready').length, color: '#10b981' }
-  ];
+    { name: '5R Housekeeping', value: housekeepingCount, color: '#f59e0b' }
+  ].filter((d) => d.value > 0);
+
+  const fallbackPieData = [{ name: 'Belum Ada Tiket', value: 1, color: '#1e293b' }];
+  const activePieData = pieData.length > 0 ? pieData : fallbackPieData;
 
   // Distribution by Urgency
   const urgencyData = [
@@ -54,6 +55,8 @@ export const MaintenanceRatioChart: React.FC<MaintenanceRatioChartProps> = ({
     }
   ];
 
+  const readyAssetsCount = assets.filter((a) => a.status_operasional === 'Ready').length;
+
   return (
     <div className="rounded-lg border border-slate-800 bg-slate-900/60 p-4 flex flex-col justify-between">
       <div className="flex items-center justify-between mb-3">
@@ -62,45 +65,47 @@ export const MaintenanceRatioChart: React.FC<MaintenanceRatioChartProps> = ({
             Maintenance & Telemetry Ratio
           </h3>
           <p className="text-[11px] text-slate-500 font-mono">
-            Distribusi Corrective vs Housekeeping & Urgensi
+            Komposisi Kategori Tiket & Distribusi Urgensi
           </p>
         </div>
         <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">
-          Live Metrics
+          {readyAssetsCount}/{assets.length} Aset Ready
         </span>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 h-48">
-        {/* Pie Breakdown */}
+        {/* Pie Breakdown (Tickets Only) */}
         <div className="relative flex flex-col items-center justify-center">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
-                data={pieData}
+                data={activePieData}
                 dataKey="value"
                 nameKey="name"
                 cx="50%"
                 cy="50%"
-                innerRadius={36}
+                innerRadius={38}
                 outerRadius={58}
-                paddingAngle={4}
+                paddingAngle={pieData.length > 1 ? 4 : 0}
                 stroke="#0f172a"
                 strokeWidth={2}
               >
-                {pieData.map((entry, index) => (
+                {activePieData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={entry.color} />
                 ))}
               </Pie>
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: '#0f172a',
-                  borderColor: '#334155',
-                  borderRadius: '6px',
-                  fontSize: '11px',
-                  color: '#fff',
-                  fontFamily: 'monospace'
-                }}
-              />
+              {pieData.length > 0 && (
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: '#0f172a',
+                    borderColor: '#334155',
+                    borderRadius: '6px',
+                    fontSize: '11px',
+                    color: '#fff',
+                    fontFamily: 'monospace'
+                  }}
+                />
+              )}
             </PieChart>
           </ResponsiveContainer>
           <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
@@ -152,15 +157,17 @@ export const MaintenanceRatioChart: React.FC<MaintenanceRatioChartProps> = ({
       <div className="mt-3 pt-2.5 border-t border-slate-800/80 flex flex-wrap items-center justify-around gap-2 text-[10px] font-mono text-slate-400">
         <div className="flex items-center gap-1.5">
           <span className="w-2 h-2 rounded-full bg-rose-500" />
-          <span>Corrective: {breakdownCount}</span>
+          <span>
+            Corrective: {breakdownCount} (
+            {incidents.length > 0 ? Math.round((breakdownCount / incidents.length) * 100) : 0}%)
+          </span>
         </div>
         <div className="flex items-center gap-1.5">
           <span className="w-2 h-2 rounded-full bg-amber-500" />
-          <span>Housekeeping: {housekeepingCount}</span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-emerald-500" />
-          <span>Ready Assets: {assets.filter((a) => a.status_operasional === 'Ready').length}</span>
+          <span>
+            5R Housekeeping: {housekeepingCount} (
+            {incidents.length > 0 ? Math.round((housekeepingCount / incidents.length) * 100) : 0}%)
+          </span>
         </div>
       </div>
     </div>

@@ -37,7 +37,7 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
       break;
     case 'IN_PROGRESS':
       bgClass = 'bg-amber-950/40 border-amber-500/60 text-amber-300';
-      dotClass = 'bg-amber-400 animate-ping';
+      dotClass = 'bg-amber-400 animate-pulse';
       label = 'IN PROGRESS';
       break;
     case 'ON_HOLD':
