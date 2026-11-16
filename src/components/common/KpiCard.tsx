@@ -28,38 +28,46 @@ export const KpiCard: React.FC<KpiCardProps> = ({
   onClick
 }) => {
   const badgeStyles = {
-    positive: 'bg-emerald-950/40 text-emerald-300 border-emerald-700/50',
-    warning: 'bg-amber-950/40 text-amber-300 border-amber-700/50',
-    critical: 'bg-rose-950/40 text-rose-300 border-rose-700/50',
-    neutral: 'bg-slate-800 text-slate-300 border-slate-700'
+    positive: 'border-[#ffff00]/60 text-white dot-[#ffff00]',
+    warning: 'border-[#0067ff]/70 text-white dot-[#0067ff]',
+    critical: 'border-[#ff3a63]/80 text-white dot-[#ff3a63]',
+    neutral: 'border-[#292a4d] text-[#b4b4bb] dot-[#9b9ba4]'
+  };
+
+  const dotColors = {
+    positive: 'bg-[#ffff00]',
+    warning: 'bg-[#0067ff]',
+    critical: 'bg-[#ff3a63]',
+    neutral: 'bg-[#9b9ba4]'
   };
 
   return (
     <div
       onClick={onClick}
-      className={`relative p-4 md:p-5 rounded-lg border border-slate-800 bg-slate-900/70 hover:border-slate-700 transition-all ${
-        onClick ? 'cursor-pointer hover:bg-slate-900/90' : ''
+      className={`relative p-4 rounded-[12px] border border-[#292a4d] bg-[#0c0a2b] transition-colors ${
+        onClick ? 'cursor-pointer hover:bg-[#2c2b52]/40' : ''
       }`}
     >
       {/* Top Header */}
       <div className="flex items-center justify-between gap-2 mb-2">
-        <span className="text-xs font-mono uppercase tracking-wider text-slate-400 font-medium">
+        <span className="text-[11px] uppercase tracking-[0.015em] text-[#9b9ba4] font-medium">
           {title}
         </span>
-        <div className="p-1.5 rounded bg-slate-800/80 text-slate-300 border border-slate-700/50">
-          <Icon className="w-4 h-4" />
+        <div className="w-7 h-7 rounded-[6px] bg-[#13151f] border border-[#202333] flex items-center justify-center text-[#b4b4bb]">
+          <Icon className="w-3.5 h-3.5" />
         </div>
       </div>
 
       {/* Main KPI Value */}
-      <div className="flex items-baseline gap-3 my-1">
-        <span className="text-2xl md:text-3xl font-bold font-mono tracking-tight text-white tabular-nums">
+      <div className="flex items-center justify-between gap-2 my-1">
+        <span className="text-2xl md:text-[32px] leading-[1.2] font-semibold font-display tracking-[0.006em] text-white tabular-nums">
           {value}
         </span>
         {badge && (
           <span
-            className={`text-[11px] font-mono px-1.5 py-0.5 rounded border font-medium tabular-nums ${badgeStyles[badge.variant]}`}
+            className={`inline-flex items-center gap-1.5 text-[11px] px-2.5 py-0.5 rounded-[30px] bg-[#13151f] border font-medium tabular-nums ${badgeStyles[badge.variant]}`}
           >
+            <span className={`w-1.5 h-1.5 rounded-full ${dotColors[badge.variant]}`} />
             {badge.text}
           </span>
         )}
@@ -67,19 +75,17 @@ export const KpiCard: React.FC<KpiCardProps> = ({
 
       {/* Subtitle / Context */}
       {subtitle && (
-        <p className="text-xs text-slate-400 mt-1 line-clamp-1">{subtitle}</p>
+        <p className="text-xs text-[#9b9ba4] mt-1.5 line-clamp-1">{subtitle}</p>
       )}
 
-      {/* Sub-breakdown if present (e.g. Open / In Progress / Hold) */}
+      {/* Sub-breakdown if present */}
       {breakdown && breakdown.length > 0 && (
-        <div className="mt-3 pt-2.5 border-t border-slate-800/80 flex items-center gap-3">
+        <div className="mt-3 pt-2.5 border-t border-[#202333] flex items-center gap-3">
           {breakdown.map((item, idx) => (
-            <div key={idx} className="flex items-center gap-1.5 text-xs text-slate-400">
+            <div key={idx} className="flex items-center gap-1.5 text-xs text-[#9b9ba4]">
               <span className={`w-2 h-2 rounded-full ${item.color}`} />
-              <span className="text-[11px] font-mono">{item.label}:</span>
-              <span className="font-mono font-semibold text-slate-200 tabular-nums">
-                {item.count}
-              </span>
+              <span className="text-[11px]">{item.label}:</span>
+              <span className="font-semibold text-white tabular-nums">{item.count}</span>
             </div>
           ))}
         </div>
