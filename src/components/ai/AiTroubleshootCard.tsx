@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Bot, Wrench, ShieldAlert, CheckSquare, Clock, Sparkles, RefreshCw } from 'lucide-react';
+import { Bot, Wrench, ShieldAlert, Clock, Sparkles, RefreshCw } from 'lucide-react';
 import { maintenanceApi } from '../../services/maintenanceApi';
 import { AiTroubleshootResult, IncidentReport } from '../../types';
 
@@ -33,78 +33,73 @@ export const AiTroubleshootCard: React.FC<AiTroubleshootCardProps> = ({ ticket }
   };
 
   return (
-    <div className="rounded-lg border border-cyan-800/40 bg-slate-950/70 p-4 space-y-3.5">
+    <div className="rounded-[12px] border border-[#292a4d] bg-[#13151f] p-4 space-y-3.5">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="p-1 rounded bg-cyan-950 text-cyan-400 border border-cyan-800">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div className="flex items-center gap-2.5">
+          <div className="w-7 h-7 rounded-[6px] bg-[#0c0a2b] border border-[#292a4d] flex items-center justify-center text-[#665eff] shrink-0">
             <Bot className="w-4 h-4" />
           </div>
           <div>
-            <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-cyan-200">
+            <h4 className="text-[14px] font-display font-semibold tracking-[0.013em] text-white">
               AI Diagnostic & Troubleshooting Suggester
             </h4>
-            <p className="text-[11px] text-slate-400">
-              Analisis Akar Masalah & Panduan Perbaikan Lapangan
+            <p className="text-xs text-[#9b9ba4]">
+              Analisis akar masalah & panduan perbaikan lapangan
             </p>
           </div>
         </div>
 
-        {!result ? (
-          <button
-            onClick={handleAnalyze}
-            disabled={loading}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-mono font-semibold bg-cyan-600 hover:bg-cyan-500 text-white disabled:opacity-50 transition-colors shadow-sm"
-          >
-            {loading ? (
-              <>
-                <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                <span>Menganalisis...</span>
-              </>
-            ) : (
-              <>
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>Analisis Gejala & Saran</span>
-              </>
-            )}
-          </button>
-        ) : (
-          <button
-            onClick={handleAnalyze}
-            disabled={loading}
-            className="flex items-center gap-1 px-2 py-1 rounded text-[11px] font-mono border border-slate-700 bg-slate-800 text-slate-300 hover:text-white"
-          >
-            <RefreshCw className={`w-3 h-3 ${loading ? 'animate-spin' : ''}`} />
-            <span>Re-analisis</span>
-          </button>
-        )}
+        <button
+          type="button"
+          onClick={handleAnalyze}
+          disabled={loading}
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[30px] text-xs font-medium bg-[#0c0a2b] border border-[#665eff]/70 hover:bg-[#2c2b52]/60 text-white disabled:opacity-50 transition-colors"
+        >
+          {loading ? (
+            <>
+              <RefreshCw className="w-3.5 h-3.5 animate-spin text-[#0067ff]" />
+              <span>Menganalisis...</span>
+            </>
+          ) : result ? (
+            <>
+              <RefreshCw className="w-3.5 h-3.5 text-[#665eff]" />
+              <span>Re-analisis</span>
+            </>
+          ) : (
+            <>
+              <Sparkles className="w-3.5 h-3.5 text-[#665eff]" />
+              <span>Analisis Gejala & Saran</span>
+            </>
+          )}
+        </button>
       </div>
 
       {/* Diagnostic Results */}
       {result && (
-        <div className="space-y-3.5 pt-2 border-t border-slate-800/80 animate-in fade-in duration-200">
+        <div className="space-y-3 pt-3 border-t border-[#202333] animate-in fade-in duration-200">
           {/* Probable Root Cause */}
-          <div className="p-3 rounded bg-slate-900/90 border border-slate-800">
-            <div className="flex items-center gap-1.5 text-xs font-mono font-bold text-amber-300 uppercase mb-1">
-              <Wrench className="w-3.5 h-3.5" />
-              <span>Dugaan Akar Masalah (Root Cause):</span>
+          <div className="p-3 rounded-[12px] bg-[#0c0a2b] border border-[#202333]">
+            <div className="flex items-center gap-1.5 text-[11px] font-medium text-[#b4b4bb] uppercase tracking-[0.015em] mb-1">
+              <Wrench className="w-3.5 h-3.5 text-[#0067ff]" />
+              <span>Dugaan Akar Masalah (Root Cause)</span>
             </div>
-            <p className="text-xs text-slate-200 leading-relaxed">
+            <p className="text-[13px] text-white leading-[1.55]">
               {result.probable_root_cause}
             </p>
           </div>
 
           {/* Safety Precautions (K3) */}
           {result.safety_precautions && result.safety_precautions.length > 0 && (
-            <div className="p-3 rounded bg-rose-950/30 border border-rose-800/40">
-              <div className="flex items-center gap-1.5 text-xs font-mono font-bold text-rose-300 uppercase mb-1.5">
-                <ShieldAlert className="w-3.5 h-3.5" />
-                <span>Prosedur Keselamatan Kerja (K3 / LOTO):</span>
+            <div className="p-3 rounded-[12px] bg-[#0c0a2b] border border-[#ff3a63]/50">
+              <div className="flex items-center gap-1.5 text-[11px] font-medium text-white uppercase tracking-[0.015em] mb-1.5">
+                <ShieldAlert className="w-3.5 h-3.5 text-[#ff3a63]" />
+                <span>Prosedur Keselamatan Kerja (K3 / LOTO)</span>
               </div>
               <ul className="space-y-1">
                 {result.safety_precautions.map((item, idx) => (
-                  <li key={idx} className="text-xs text-rose-100 flex items-start gap-1.5">
-                    <span className="text-rose-400 font-bold">•</span>
+                  <li key={idx} className="text-xs text-[#b4b4bb] flex items-start gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#ff3a63] mt-1.5 shrink-0" />
                     <span>{item}</span>
                   </li>
                 ))}
@@ -115,11 +110,11 @@ export const AiTroubleshootCard: React.FC<AiTroubleshootCardProps> = ({ ticket }
           {/* Interactive Step-by-Step Troubleshooting Checklist */}
           <div>
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-mono font-bold text-slate-300 uppercase tracking-wider">
-                Langkah Troubleshooting Terstruktur:
+              <span className="text-[11px] font-medium text-[#9b9ba4] uppercase tracking-[0.015em]">
+                Langkah Troubleshooting Terstruktur
               </span>
-              <span className="text-[11px] font-mono text-cyan-400 flex items-center gap-1">
-                <Clock className="w-3 h-3" />
+              <span className="inline-flex items-center gap-1.5 text-[11px] px-2.5 py-0.5 rounded-[30px] bg-[#0c0a2b] border border-[#292a4d] text-[#b4b4bb] tabular-nums">
+                <Clock className="w-3 h-3 text-[#0067ff]" />
                 <span>Est: {result.estimated_resolution_minutes} Menit</span>
               </span>
             </div>
@@ -130,21 +125,21 @@ export const AiTroubleshootCard: React.FC<AiTroubleshootCardProps> = ({ ticket }
                   <div
                     key={idx}
                     onClick={() => toggleStep(idx)}
-                    className={`flex items-start gap-2.5 p-2 rounded cursor-pointer border transition-colors ${
+                    className={`flex items-start gap-2.5 p-2.5 rounded-[12px] cursor-pointer border transition-colors ${
                       isChecked
-                        ? 'bg-emerald-950/30 border-emerald-700/40 text-emerald-300'
-                        : 'bg-slate-900 border-slate-800 text-slate-300 hover:border-slate-700'
+                        ? 'bg-[#2c2b52]/40 border-[#ffff00]/50 text-[#9b9ba4]'
+                        : 'bg-[#0c0a2b] border-[#202333] text-[#b4b4bb] hover:border-[#292a4d] hover:text-white'
                     }`}
                   >
                     <input
                       type="checkbox"
                       checked={isChecked}
                       onChange={() => toggleStep(idx)}
-                      className="mt-0.5 rounded border-slate-700 text-emerald-500 focus:ring-0 cursor-pointer"
+                      className="mt-0.5 rounded-[6px] border-[#353545] accent-[#665eff] cursor-pointer"
                     />
                     <span
-                      className={`text-xs leading-relaxed ${
-                        isChecked ? 'line-through opacity-80' : ''
+                      className={`text-xs leading-[1.5] ${
+                        isChecked ? 'line-through opacity-75' : ''
                       }`}
                     >
                       {step}
@@ -157,14 +152,14 @@ export const AiTroubleshootCard: React.FC<AiTroubleshootCardProps> = ({ ticket }
 
           {/* Required Tools */}
           {result.required_tools && result.required_tools.length > 0 && (
-            <div className="pt-2 border-t border-slate-800 flex flex-wrap items-center gap-1.5">
-              <span className="text-[11px] font-mono text-slate-400 mr-1">
-                Peralatan Dibutuhkan:
+            <div className="pt-2.5 border-t border-[#202333] flex flex-wrap items-center gap-1.5">
+              <span className="text-[11px] text-[#9b9ba4] mr-1">
+                Peralatan:
               </span>
               {result.required_tools.map((tool, idx) => (
                 <span
                   key={idx}
-                  className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-300"
+                  className="text-[11px] px-2.5 py-0.5 rounded-[30px] bg-[#0c0a2b] border border-[#292a4d] text-[#b4b4bb]"
                 >
                   {tool}
                 </span>
