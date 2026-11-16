@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { IncidentReport } from '../../types';
 import { StatusBadge } from '../common/StatusBadge';
 import { useAuth } from '../../context/AuthContext';
-import { Image as ImageIcon, ChevronRight, AlertCircle } from 'lucide-react';
+import { Image as ImageIcon, ChevronRight, AlertCircle, ChevronDown } from 'lucide-react';
 
 interface ActiveTicketQueueProps {
   incidents: IncidentReport[];
@@ -29,7 +29,6 @@ export const ActiveTicketQueue: React.FC<ActiveTicketQueueProps> = ({
   const [activeTab, setActiveTab] = useState<FilterTab>('ALL');
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
 
-  // Filtered and sorted incidents (prioritizing active critical tickets)
   const filteredIncidents = useMemo(() => {
     const urgencyRank: Record<string, number> = { Critical: 3, Urgent: 2, Normal: 1 };
     const isClosedRank = (status: string) =>
@@ -37,12 +36,10 @@ export const ActiveTicketQueue: React.FC<ActiveTicketQueueProps> = ({
 
     return incidents
       .filter((ticket) => {
-        // Asset filter from watchlist
         if (selectedAssetId && ticket.asset_id !== selectedAssetId) {
           return false;
         }
 
-        // Tab Filter
         if (activeTab === 'MY_REPORTS') {
           const isReporter = ticket.pelapor_email.toLowerCase() === user?.email.toLowerCase();
           const isPic = ticket.pic_teknisi_email?.toLowerCase() === user?.email.toLowerCase();
@@ -55,12 +52,10 @@ export const ActiveTicketQueue: React.FC<ActiveTicketQueueProps> = ({
           if (ticket.urgensi !== 'Critical' && ticket.urgensi !== 'Urgent') return false;
         }
 
-        // Status dropdown filter
         if (statusFilter !== 'ALL' && ticket.status_terkini !== statusFilter) {
           return false;
         }
 
-        // Global text search filter
         if (searchQuery.trim()) {
           const q = searchQuery.toLowerCase();
           const matchId = ticket.ticket_id.toLowerCase().includes(q);
@@ -139,26 +134,26 @@ export const ActiveTicketQueue: React.FC<ActiveTicketQueueProps> = ({
   };
 
   return (
-    <div className="rounded-lg border border-slate-800 bg-slate-900/60 overflow-hidden">
-      {/* Tab Filter Bar */}
-      <div className="p-3 border-b border-slate-800 bg-slate-950/60 flex flex-wrap items-center justify-between gap-3">
+    <div className="rounded-[12px] border border-[#292a4d] bg-[#0c0a2b] overflow-hidden">
+      {/* Pill Tab Filter Bar */}
+      <div className="p-3 border-b border-[#292a4d] bg-[#0c0a2b] flex flex-wrap items-center justify-between gap-2.5">
         <div className="flex flex-wrap items-center gap-1.5">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-mono font-medium transition-colors ${
+              className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-[30px] text-xs font-medium border transition-colors ${
                 activeTab === tab.id
-                  ? 'bg-slate-800 border border-slate-700 text-white font-semibold'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
+                  ? 'bg-[#2c2b52] border-[#665eff] text-white'
+                  : 'bg-[#13151f] border-[#202333] text-[#b4b4bb] hover:text-white hover:border-[#292a4d]'
               }`}
             >
               <span>{tab.label}</span>
               <span
-                className={`text-[10px] px-1.5 py-0.2 rounded font-mono tabular-nums ${
+                className={`text-[11px] px-1.5 py-0.2 rounded-[30px] tabular-nums ${
                   activeTab === tab.id
-                    ? 'bg-slate-700 text-slate-100'
-                    : 'bg-slate-900 text-slate-500'
+                    ? 'bg-[#0c0a2b] text-white'
+                    : 'bg-[#0c0a2b]/60 text-[#9b9ba4]'
                 }`}
               >
                 {tab.count}
@@ -167,15 +162,15 @@ export const ActiveTicketQueue: React.FC<ActiveTicketQueueProps> = ({
           ))}
         </div>
 
-        {/* Status Dropdown Filter & Active Filter Pills */}
+        {/* Status Dropdown Pill & Active Filter Pills */}
         <div className="flex flex-wrap items-center gap-2">
           {selectedShift !== 'ALL' && (
-            <div className="flex items-center gap-1 px-2 py-1 rounded bg-cyan-950/50 border border-cyan-800/60 text-xs font-mono text-cyan-300">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-[30px] bg-[#2c2b52]/60 border border-[#665eff]/70 text-xs text-white font-medium">
               <span>Shift: {selectedShift}</span>
               {onClearShiftFilter && (
                 <button
                   onClick={onClearShiftFilter}
-                  className="hover:text-white font-bold ml-1"
+                  className="hover:text-[#ff3a63] font-semibold ml-0.5"
                   title="Hapus filter shift"
                 >
                   Ã—
@@ -185,11 +180,12 @@ export const ActiveTicketQueue: React.FC<ActiveTicketQueueProps> = ({
           )}
 
           {selectedAssetId && (
-            <div className="flex items-center gap-1 px-2 py-1 rounded bg-rose-950/40 border border-rose-800/60 text-xs font-mono text-rose-300">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-[30px] bg-[#13151f] border border-[#ff3a63]/70 text-xs text-white font-medium">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#ff3a63]" />
               <span>Aset: {selectedAssetId}</span>
               <button
                 onClick={onClearAssetFilter}
-                className="hover:text-white font-bold ml-1"
+                className="hover:text-[#ff3a63] font-semibold ml-0.5"
                 title="Hapus filter aset"
               >
                 Ã—
@@ -197,28 +193,31 @@ export const ActiveTicketQueue: React.FC<ActiveTicketQueueProps> = ({
             </div>
           )}
 
-          <select
-            aria-label="Filter Status Tiket"
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="tv-hide bg-slate-900 border border-slate-800 rounded px-2.5 py-1 text-xs font-mono text-slate-300 focus:outline-none focus:border-slate-700 cursor-pointer"
-          >
-            <option value="ALL">Semua Status</option>
-            <option value="SUBMITTED">SUBMITTED</option>
-            <option value="ASSIGNED">ASSIGNED</option>
-            <option value="IN_PROGRESS">IN PROGRESS</option>
-            <option value="ON_HOLD">ON HOLD</option>
-            <option value="RESOLVED">RESOLVED</option>
-            <option value="CLOSED">CLOSED</option>
-          </select>
+          <div className="relative tv-hide">
+            <select
+              aria-label="Filter Status Tiket"
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="appearance-none bg-[#13151f] border border-[#292a4d] hover:border-[#665eff] rounded-[30px] px-3 pr-7 py-1 text-xs font-medium text-[#b4b4bb] hover:text-white focus:outline-none cursor-pointer transition-colors"
+            >
+              <option value="ALL">Semua Status</option>
+              <option value="SUBMITTED">Submitted</option>
+              <option value="ASSIGNED">Assigned</option>
+              <option value="IN_PROGRESS">In Progress</option>
+              <option value="ON_HOLD">On Hold</option>
+              <option value="RESOLVED">Resolved</option>
+              <option value="CLOSED">Closed</option>
+            </select>
+            <ChevronDown className="w-3.5 h-3.5 text-[#9b9ba4] absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+          </div>
         </div>
       </div>
 
-      {/* Ticket Table */}
+      {/* Dense Product Table (Index Style: Carbon Iris rows, Graphite 1px borders, tabular figures) */}
       <div className="overflow-x-auto">
-        <table className="w-full text-left text-xs text-slate-300 border-collapse">
+        <table className="w-full text-left text-[13px] border-collapse">
           <thead>
-            <tr className="border-b border-slate-800 bg-slate-950/40 font-mono text-[11px] text-slate-400 uppercase tracking-wider">
+            <tr className="border-b border-[#292a4d] bg-[#0c0a2b] text-[11px] font-medium text-[#9b9ba4] uppercase tracking-[0.015em]">
               <th className="py-2.5 px-3">Ticket ID</th>
               <th className="py-2.5 px-3">Kategori</th>
               <th className="py-2.5 px-3">Aset / Lokasi</th>
@@ -227,14 +226,14 @@ export const ActiveTicketQueue: React.FC<ActiveTicketQueueProps> = ({
               <th className="py-2.5 px-3 hidden md:table-cell">Pelapor</th>
               <th className="py-2.5 px-3">PIC Teknisi</th>
               <th className="py-2.5 px-3 text-right">Durasi / SLA</th>
-              <th className="py-2.5 px-3 text-center tv-hide">Aksi</th>
+              <th className="py-2.5 px-3 text-center tv-hide">Detail</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-800/60 font-sans">
+          <tbody className="divide-y divide-[#202333]">
             {filteredIncidents.length === 0 ? (
-              <tr>
-                <td colSpan={9} className="py-8 text-center text-slate-500 font-mono">
-                  Tidak ada tiket incident yang cocok dengan filter.
+              <tr className="bg-[#13151f]">
+                <td colSpan={9} className="py-8 text-center text-[#9b9ba4] text-xs">
+                  Tidak ada tiket incident yang cocok dengan filter aktif.
                 </td>
               </tr>
             ) : (
@@ -244,87 +243,87 @@ export const ActiveTicketQueue: React.FC<ActiveTicketQueueProps> = ({
                   <tr
                     key={ticket.ticket_id}
                     onClick={() => onSelectTicket(ticket)}
-                    className="hover:bg-slate-800/40 transition-colors cursor-pointer group"
+                    className="bg-[#13151f] hover:bg-[#2c2b52]/50 transition-colors cursor-pointer group"
                   >
                     {/* Ticket ID */}
-                    <td className="py-3 px-3 font-mono font-bold text-white tabular-nums whitespace-nowrap">
+                    <td className="py-2.5 px-3 font-medium text-white tabular-nums whitespace-nowrap">
                       <div className="flex items-center gap-1.5">
                         {ticket.foto_awal_url ? (
-                          <ImageIcon className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                          <ImageIcon className="w-3.5 h-3.5 text-[#0067ff] shrink-0" />
                         ) : null}
                         <span>{ticket.ticket_id}</span>
                       </div>
                     </td>
 
                     {/* Kategori */}
-                    <td className="py-3 px-3 whitespace-nowrap">
-                      <StatusBadge status={ticket.kategori_laporan} size="sm" showDot={false} />
+                    <td className="py-2.5 px-3 whitespace-nowrap">
+                      <StatusBadge status={ticket.kategori_laporan} size="sm" />
                     </td>
 
                     {/* Aset / Lokasi */}
-                    <td className="py-3 px-3 max-w-xs">
-                      <div className="font-mono font-semibold text-slate-200">
+                    <td className="py-2.5 px-3 max-w-xs">
+                      <div className="font-medium text-white tabular-nums">
                         {ticket.asset_id}
                       </div>
-                      <div className="text-[11px] text-slate-400 truncate">
+                      <div className="text-xs text-[#9b9ba4] truncate">
                         {ticket.lokasi_detail}
                       </div>
                     </td>
 
                     {/* Urgensi */}
-                    <td className="py-3 px-3 whitespace-nowrap">
+                    <td className="py-2.5 px-3 whitespace-nowrap">
                       <StatusBadge status={ticket.urgensi} size="sm" />
                     </td>
 
                     {/* Status */}
-                    <td className="py-3 px-3 whitespace-nowrap">
+                    <td className="py-2.5 px-3 whitespace-nowrap">
                       <StatusBadge status={ticket.status_terkini} size="sm" />
                     </td>
 
                     {/* Pelapor */}
-                    <td className="py-3 px-3 hidden md:table-cell">
-                      <div className="text-slate-200 font-medium truncate max-w-[130px]">
+                    <td className="py-2.5 px-3 hidden md:table-cell">
+                      <div className="text-white font-medium truncate max-w-[130px]">
                         {ticket.pelapor_nama}
                       </div>
-                      <div className="text-[10px] text-slate-500 font-mono truncate max-w-[130px]">
+                      <div className="text-[11px] text-[#9b9ba4] truncate max-w-[130px]">
                         {ticket.pelapor_unit}
                       </div>
                     </td>
 
                     {/* PIC Teknisi */}
-                    <td className="py-3 px-3 whitespace-nowrap">
+                    <td className="py-2.5 px-3 whitespace-nowrap">
                       {ticket.pic_teknisi_nama ? (
-                        <span className="text-amber-300 font-mono text-xs">
+                        <span className="text-white font-medium text-xs">
                           {ticket.pic_teknisi_nama}
                         </span>
                       ) : (
-                        <span className="text-slate-500 font-mono text-[11px] italic">
+                        <span className="text-[#9b9ba4] text-xs">
                           Unassigned
                         </span>
                       )}
                     </td>
 
                     {/* Waktu & SLA Indicator */}
-                    <td className="py-3 px-3 text-right font-mono text-[11px] tabular-nums whitespace-nowrap">
+                    <td className="py-2.5 px-3 text-right text-xs tabular-nums whitespace-nowrap">
                       <span
                         className={`inline-flex items-center gap-1 ${
-                          age.isSlaBreach ? 'text-rose-400 font-bold' : 'text-slate-400'
+                          age.isSlaBreach ? 'text-[#ff3a63] font-semibold' : 'text-[#b4b4bb]'
                         }`}
                         title={age.isSlaBreach ? 'Melebihi target SLA 3.0 Jam' : 'Dalam batas SLA'}
                       >
-                        {age.isSlaBreach && <AlertCircle className="w-3 h-3 shrink-0" />}
+                        {age.isSlaBreach && <AlertCircle className="w-3.5 h-3.5 shrink-0" />}
                         {age.label}
                       </span>
                     </td>
 
                     {/* Aksi */}
-                    <td className="py-3 px-3 text-center tv-hide">
+                    <td className="py-2.5 px-3 text-center tv-hide">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           onSelectTicket(ticket);
                         }}
-                        className="p-1 rounded text-slate-400 group-hover:text-cyan-300 group-hover:bg-slate-800 transition-colors"
+                        className="p-1 rounded-[30px] text-[#9b9ba4] group-hover:text-white group-hover:bg-[#2c2b52] transition-colors"
                         title="Buka Detail & Timeline"
                       >
                         <ChevronRight className="w-4 h-4" />
@@ -339,12 +338,12 @@ export const ActiveTicketQueue: React.FC<ActiveTicketQueueProps> = ({
       </div>
 
       {/* Footer Info */}
-      <div className="p-3 border-t border-slate-800 bg-slate-950/40 flex flex-wrap items-center justify-between gap-2 text-xs font-mono text-slate-400">
+      <div className="p-3 border-t border-[#292a4d] bg-[#0c0a2b] flex flex-wrap items-center justify-between gap-2 text-xs text-[#9b9ba4] tabular-nums">
         <span>
-          Menampilkan <span className="text-white font-semibold">{filteredIncidents.length}</span> dari{' '}
-          <span className="text-white font-semibold">{incidents.length}</span> tiket
+          Menampilkan <strong className="text-white font-medium">{filteredIncidents.length}</strong> dari{' '}
+          <strong className="text-white font-medium">{incidents.length}</strong> tiket
         </span>
-        <span className="text-[11px] text-slate-500 tv-hide">
+        <span className="tv-hide">
           Klik baris untuk membuka detail histori, foto Before/After & tindakan
         </span>
       </div>
