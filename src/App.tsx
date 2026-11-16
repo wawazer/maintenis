@@ -427,7 +427,7 @@ export const App: React.FC = () => {
       <footer className="border-t border-slate-900 bg-slate-950 px-4 py-3 text-xs font-mono text-slate-500 flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-emerald-400" />
-          <span>CMMS Telemetry Engine • Google Sheets + Google Apps Script</span>
+          <span>CMMS Telemetry Engine</span>
         </div>
         <div className="flex items-center gap-3">
           <span>AI Engine: Gemini 2.5 Flash / Groq Llama 3.3</span>
